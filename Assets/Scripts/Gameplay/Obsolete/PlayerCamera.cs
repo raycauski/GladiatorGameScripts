@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class PlayerCamera : MonoBehaviour
 {
+    private PlayerInputManager playerInput;
+
     // Collisions
     private Camera mainCamera;
     public LayerMask collisionLayers;
@@ -29,7 +31,7 @@ public class PlayerCamera : MonoBehaviour
     public float sensitivityY = 0.1f;
     private float camAngleX;
     private float camAngleY;
-    private float minPivot = -35f;
+    private float minPivot = -45f;
     private float maxPivot = 60f;
     // Aiming
     public CanvasGroup crosshairCanvas;
@@ -38,9 +40,8 @@ public class PlayerCamera : MonoBehaviour
     public float zoomSpeed = 0.5f;
     private float defaultFOV;
     private float sensitivityFactor;
-    private PlayerNavigation playerScript;
 
-    private void Start()
+    private void Awake()
     {
         // References current camera settings
         mainCamera = Camera.main;
@@ -52,8 +53,11 @@ public class PlayerCamera : MonoBehaviour
         crosshairCanvas.alpha = 0;
 
         playerPos = player.transform;
-        playerScript = player.GetComponent<PlayerNavigation>();
+        playerInput = player.GetComponent<PlayerInputManager>();
+
+
     }
+
     void LateUpdate()
     {
         // calculates collision corners, finds collisions, then applies rotation
@@ -75,12 +79,15 @@ public class PlayerCamera : MonoBehaviour
     private void CameraPivotRotation(float delta, float sensX, float sensY)
     {
         
-        float h = sensX * sensitivityFactor * Input.GetAxisRaw("Mouse X"); /// -1 inverts horizontal cam, add option later
-        float v = sensY * sensitivityFactor * Input.GetAxisRaw("Mouse Y"); /// -1 inverts horizontal cam, add option later
+        //float h = sensX * sensitivityFactor * Input.GetAxisRaw("Mouse X"); /// -1 inverts horizontal cam, add option later
+        //float v = sensY * sensitivityFactor * Input.GetAxisRaw("Mouse Y"); /// -1 inverts horizontal cam, add option later
+        Vector2 viewDirection = playerInput.lookInput * sensitivityFactor;
+        float viewX = sensX * viewDirection.x;
+        float viewY = sensY * viewDirection.y;
 
         // Angle in radians
-        camAngleX += h;
-        camAngleY -= v;
+        camAngleX += viewX;
+        camAngleY -= viewY;
 
         camAngleY = Mathf.Clamp(camAngleY, minPivot, maxPivot);
 
@@ -158,20 +165,21 @@ public class PlayerCamera : MonoBehaviour
     private void AimZoom(float delta)
     {
         //Zooming in decreases cam FOV and slows camera sensitivity by the aim sens factor
-        if (Input.GetMouseButton(1))
+        if (playerInput.isAiming)
         {
             mainCamera.fieldOfView = Mathf.Lerp(mainCamera.fieldOfView, aimFOV, delta * zoomSpeed);//FOV zoom in
             sensitivityFactor = Mathf.Lerp(sensitivityFactor, aimSensitivity, zoomSpeed); // Sensitivity slows
             crosshairCanvas.alpha = Mathf.Lerp(crosshairCanvas.alpha, 1, delta * zoomSpeed); // crosshair fades in
-            playerScript.isAiming = true; // Player will rotate to follow camera as in PlayerMove Script
+             // Player will rotate to follow camera as in PlayerMove Script
         }
         else
         {
             mainCamera.fieldOfView = Mathf.Lerp(mainCamera.fieldOfView, defaultFOV, delta * zoomSpeed); //FOV zooms out 
             sensitivityFactor = Mathf.Lerp(sensitivityFactor, 1, zoomSpeed); // sensitivity returns to normal
             crosshairCanvas.alpha = Mathf.Lerp(crosshairCanvas.alpha, 0, delta * zoomSpeed * 2); //crosshair fade out
-            playerScript.isAiming = false; // Player will no longer rotate
+            // Player will no longer rotate
         }
+        
     }
 
 }

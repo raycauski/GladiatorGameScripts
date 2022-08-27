@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.InputSystem;
 using UnityEngine;
 
 public class PlayerNavigation : MonoBehaviour
@@ -7,11 +8,11 @@ public class PlayerNavigation : MonoBehaviour
     private CharacterController controller;
     public Transform cameraPos;
     private Vector3 playerVelocity;
+    private PlayerInputManager playerInput;
 
-    
     private float velX = 0;
     private float velZ = 0;
-    private float gravity = 9.8f;
+    private float gravity = 12f;
   
     public float maxSpeed = 9.0f;
     private float maxSpeedAiming;
@@ -21,16 +22,18 @@ public class PlayerNavigation : MonoBehaviour
     
     //[HideInInspector]
     public bool isAiming;
-    
-
     public bool playerGrounded;
 
     // Start is called before the first frame update
-    void Start()
+    private void Awake()
     {
         controller = GetComponent<CharacterController>();
+        playerInput = GetComponent<PlayerInputManager>();
+
+
         LockCursor();
         maxSpeedAiming = maxSpeed * 0.6f;
+
     }
 
     // Update is called once per frame
@@ -38,16 +41,17 @@ public class PlayerNavigation : MonoBehaviour
     {
         ApplyGravity(Time.deltaTime);
         HandleMovement(Time.deltaTime);
+        
     }
 
     private void HandleMovement(float delta)
     {
         // Input Vectors
-        Vector3 movementInput = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical")).normalized;
+        Vector2 movementInput = (playerInput.movementInput).normalized;
         //Ismoving check and face camera while moving
         float curMaxSpeed;
 
-        if (movementInput == Vector3.zero)
+        if (movementInput == Vector2.zero)
         {
             isMoving = false;
         }
@@ -70,9 +74,9 @@ public class PlayerNavigation : MonoBehaviour
         }
         // Rotates direction of Player and calculates Accel/Deccel
         
-        Vector3 targetVelocity = movementInput * curMaxSpeed;
+        Vector2 targetVelocity = movementInput * curMaxSpeed;
         velX = Mathf.Lerp(velX, targetVelocity.x, Time.deltaTime * accelerationRate);
-        velZ = Mathf.Lerp(velZ, targetVelocity.z, Time.deltaTime * accelerationRate);
+        velZ = Mathf.Lerp(velZ, targetVelocity.y, Time.deltaTime * accelerationRate);
 
         Vector3 currentVelocity = Quaternion.Euler(0, controller.transform.eulerAngles.y, 0) * new Vector3(velX, playerVelocity.y, velZ);
 
@@ -104,13 +108,17 @@ public class PlayerNavigation : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
+
+    /*
     void UnlockCursor()
     {
-        if (Input.GetButton("Escape"))
+        if (escape)
         {
+            
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
         }
     }
+    */
   
 }
