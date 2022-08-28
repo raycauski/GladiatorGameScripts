@@ -31,9 +31,11 @@ public class FPSCamera : MonoBehaviour
     [SerializeField, Range(0, 0.005f)] private float amplitude;
     [SerializeField, Range(0, 30)] private float frequency = 10.0f;
     private float toggleSpeed = 1.0f;
-    private float lerpSpeed = 4f;
+    
+    private float returnToStartSpeed = 4f;
     private Vector3 startPos;
     private float sinTimer = 0.0f;
+    private const float LERPSPEED = 1000f;
     private const float TARGETFOCUSDISTANCE = 15.0f;
 
     private Vector3 camRotation = Vector3.zero;
@@ -130,7 +132,10 @@ public class FPSCamera : MonoBehaviour
     private void PlayMotion(Vector3 motion)
     {
         // Applies local movement from parameter to camera. 
-        cameraTransform.localPosition += motion;
+        Vector3 cameraTargetPos = (cameraTransform.localPosition + motion);
+        // uses lerping so that deltaTime is applied, preventing unwanted movement.
+        cameraTransform.localPosition = Vector3.Lerp(cameraTransform.localPosition, cameraTargetPos, LERPSPEED * Time.deltaTime);
+
     }
     private Vector3 FootstepBobbing()
     {
@@ -146,7 +151,7 @@ public class FPSCamera : MonoBehaviour
         // Resets camera local position to starting position when no longer moving
         if (cameraTransform.localPosition != startPos)
         {
-            cameraTransform.localPosition = Vector3.Lerp(cameraTransform.localPosition, startPos, lerpSpeed * delta);
+            cameraTransform.localPosition = Vector3.Lerp(cameraTransform.localPosition, startPos, returnToStartSpeed * delta);
         }
     }
 
