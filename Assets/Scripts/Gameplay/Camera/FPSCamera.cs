@@ -31,6 +31,7 @@ public class FPSCamera : MonoBehaviour
     [SerializeField, Range(0, 0.005f)] private float amplitude;
     [SerializeField, Range(0, 30)] private float frequency = 10.0f;
     private float toggleSpeed = 1.0f;
+    private float lerpSpeed = 4f;
     private Vector3 startPos;
     private float sinTimer = 0.0f;
     private const float TARGETFOCUSDISTANCE = 15.0f;
@@ -145,7 +146,7 @@ public class FPSCamera : MonoBehaviour
         // Resets camera local position to starting position when no longer moving
         if (cameraTransform.localPosition != startPos)
         {
-            cameraTransform.localPosition = Vector3.Lerp(cameraTransform.localPosition, startPos, 1 * delta);
+            cameraTransform.localPosition = Vector3.Lerp(cameraTransform.localPosition, startPos, lerpSpeed * delta);
         }
     }
 
