@@ -13,6 +13,7 @@ public class PlayerFallState : PlayerBaseState
 
     public override void EnterState(PlayerStateMachine playerStateMachine)
     {
+        Debug.Log("Falling");
         playerStateMachine.SetCurrentMovement(fallingSpeed, fallingAcceleration);
     }
     public override void LogicUpdate(PlayerStateMachine playerStateMachine)
@@ -25,7 +26,7 @@ public class PlayerFallState : PlayerBaseState
     }
     public override void ExitState(PlayerStateMachine playerStateMachine)
     {
-
+        Debug.Log("Landed");
     }
 
 

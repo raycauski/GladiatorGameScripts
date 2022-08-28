@@ -16,6 +16,7 @@
 # Ignore all assets besides scripts folder
 /Assets/*
 !/Assets/Scripts/
+!/Assets/Shaders/
 
 /Assets/Scripts/*
 !/Assets/Scripts/Game States/
@@ -23,6 +24,9 @@
 !/Assets/Scripts/IO/
 !/Assets/Scripts/Managers/
 !/Assets/Scripts/UI/
+
+/Assets/Shaders/*
+!/Assets/Shaders/Include/
 
 
 # MemoryCaptures can get excessive in size.

@@ -7,8 +7,8 @@ using UnityEngine.InputSystem;
 // to all player states such as gravity and movement.
 public class PlayerStateMachine : MonoBehaviour
 {
-    PlayerBaseState currentState;
-    PlayerBaseState previousState;
+    public PlayerBaseState currentState { get; private set; }
+    public PlayerBaseState previousState { get; private set; }
 
     public PlayerBaseState playerRangedState = new PlayerRangedState();
     public PlayerBaseState playerFallState = new PlayerFallState();
