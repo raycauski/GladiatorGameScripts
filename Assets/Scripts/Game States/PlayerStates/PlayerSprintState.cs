@@ -7,11 +7,10 @@ public class PlayerSprintState : PlayerBaseState
     private PlayerStateMachine stateMachine;
     private PlayerInputManager playerInput;
 
-    private float sprintSpeed = 7.5f;
-    private float sprintAccelerationRate = 3f;
+    private float sprintSpeed = 8f;
+    private float sprintAccelerationRate = 5f;
     public override void EnterState(PlayerStateMachine playerStateMachine)
     {
-        Debug.Log("Sprinting");
         stateMachine = playerStateMachine;
         playerInput = stateMachine.playerInput;
         EnableSprint();
@@ -22,7 +21,7 @@ public class PlayerSprintState : PlayerBaseState
     }
     public override void ExitState(PlayerStateMachine playerStateMachine)
     {
-        Debug.Log("Not Sprinting");
+
     }
 
     private void EnableSprint()

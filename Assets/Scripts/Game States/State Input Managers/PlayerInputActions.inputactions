@@ -51,15 +51,6 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "TargetLock",
-                    "type": "Button",
-                    "id": "1f21f6bc-c02c-4fa5-936b-7c86eb559536",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
                     "name": "Interact",
                     "type": "Button",
                     "id": "f975efec-e42c-4b72-a71e-f7bc874a27ea",
@@ -114,9 +105,27 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "SprintToggle",
+                    "type": "Button",
+                    "id": "993f0521-87bb-4cf3-b436-1f3f55b1084c",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "AltAttack",
                     "type": "Button",
                     "id": "cb40d941-e2d4-4975-8449-06a3df993619",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Crouch",
+                    "type": "Button",
+                    "id": "78452cb0-db98-4d2b-bc3a-0399b5518140",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -280,28 +289,6 @@
                 },
                 {
                     "name": "",
-                    "id": "a0ecce30-c9b9-409a-9d63-9b4fce0e7eb9",
-                    "path": "<Keyboard>/q",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Keyboard and Mouse",
-                    "action": "TargetLock",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "451fcef6-d7b1-4f38-9a2e-09c9102bef11",
-                    "path": "<Gamepad>/rightStickPress",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "GamePad",
-                    "action": "TargetLock",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "5b23a7ba-b42e-4824-8d52-7273e31f7699",
                     "path": "<Keyboard>/e",
                     "interactions": "",
@@ -423,17 +410,6 @@
                 },
                 {
                     "name": "",
-                    "id": "a6dace33-02c3-47ac-916e-b20476b8b1e4",
-                    "path": "<Gamepad>/leftStickPress",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Sprint",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "6b5601e4-e7a3-4e5f-ae37-7f50972107ff",
                     "path": "<Mouse>/rightButton",
                     "interactions": "Hold",
@@ -451,6 +427,39 @@
                     "processors": "",
                     "groups": "GamePad",
                     "action": "AltAttack",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "7dd345ab-ebf1-4fb0-a08f-f03c8f453f9d",
+                    "path": "<Keyboard>/ctrl",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard and Mouse",
+                    "action": "Crouch",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "42abdf6c-ff34-4712-ac6d-a15bf6a1518c",
+                    "path": "<Gamepad>/rightStickPress",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "GamePad",
+                    "action": "Crouch",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "093492ee-bd22-4d63-b434-8507e2e744ae",
+                    "path": "<Gamepad>/leftStickPress",
+                    "interactions": "Press",
+                    "processors": "",
+                    "groups": "GamePad",
+                    "action": "SprintToggle",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

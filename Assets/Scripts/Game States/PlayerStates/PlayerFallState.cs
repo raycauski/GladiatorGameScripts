@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class PlayerFallState : PlayerBaseState
 {
-    private float fallingSpeed = 3f;
-    private float fallingAcceleration = 5f;
+    private float fallingSpeed = 2.6f;
+    private float fallingAcceleration = 3f;
 
 
     public float maxSpeed = 4.5f;
@@ -13,7 +13,6 @@ public class PlayerFallState : PlayerBaseState
 
     public override void EnterState(PlayerStateMachine playerStateMachine)
     {
-        Debug.Log("Falling");
         playerStateMachine.SetCurrentMovement(fallingSpeed, fallingAcceleration);
     }
     public override void LogicUpdate(PlayerStateMachine playerStateMachine)
@@ -26,7 +25,7 @@ public class PlayerFallState : PlayerBaseState
     }
     public override void ExitState(PlayerStateMachine playerStateMachine)
     {
-        Debug.Log("Landed");
+
     }
 
 

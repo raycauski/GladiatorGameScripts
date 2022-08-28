@@ -14,10 +14,12 @@ public class PlayerInputManager : MonoBehaviour
     private InputAction look;
     private InputAction pause;
     private InputAction sprint;
+    private InputAction crouch;
 
     public Vector2 movementInput { get; private set; } = Vector2.zero;
     public Vector2 lookInput { get; private set; } = Vector2.zero;
     public bool isAiming { get; private set; } = false;
+    public bool isCrouching = false;
     public bool isSprinting { get; private set; } = false;
 
     private void Awake()
@@ -25,8 +27,8 @@ public class PlayerInputManager : MonoBehaviour
         inputActions = new PlayerInputActions();
         CreateActions();
 
-        aim.performed += context => SetAimTrue();
-        aim.canceled += context => SetAimFalse();
+        aim.performed += context => SetAim(true);
+        aim.canceled += context => SetAim(false);
     }
     private void CreateActions()
     {
@@ -35,6 +37,7 @@ public class PlayerInputManager : MonoBehaviour
         look = inputActions.PlayerControls.Look;
         pause = inputActions.PlayerControls.Pause;
         sprint = inputActions.PlayerControls.Sprint;
+        crouch = inputActions.PlayerControls.Crouch;
     }
     private void OnEnable()
     {
@@ -48,7 +51,10 @@ public class PlayerInputManager : MonoBehaviour
         look.canceled += SetLook;
 
         sprint.performed += SetSprint;
+        sprint.performed += ResetCrouch;
         sprint.canceled += SetSprint;
+
+        crouch.performed += ToggleCrouch;
 
         pause.performed += PauseGame;
         pause.canceled += PauseGame;
@@ -64,7 +70,10 @@ public class PlayerInputManager : MonoBehaviour
         look.canceled -= SetLook;
 
         sprint.performed -= SetSprint;
+        sprint.performed -= ResetCrouch;
         sprint.canceled -= SetSprint;
+        
+        crouch.performed -= ToggleCrouch;
 
         pause.performed -= PauseGame;
         pause.canceled -= PauseGame;
@@ -80,20 +89,24 @@ public class PlayerInputManager : MonoBehaviour
     {
         lookInput = context.ReadValue<Vector2>();
     }
-    private void SetAimTrue()
+    private void SetAim(bool aimToggle)
     {
-        isAiming = true;
-        Debug.Log("Woaoooaooaoaoa");
+        isAiming = aimToggle;
     }
-    private void SetAimFalse()
+    private void ToggleCrouch(InputAction.CallbackContext context)
     {
-        isAiming = false;
+        // Toggles between crouching
+        isCrouching = !isCrouching;
     }
-
+    private void ResetCrouch(InputAction.CallbackContext context)
+    {
+        isCrouching = false;
+    }
     private void SetSprint(InputAction.CallbackContext context)
     {
         isSprinting = context.performed;
     }
+
 
     private void PauseGame(InputAction.CallbackContext context)
     {

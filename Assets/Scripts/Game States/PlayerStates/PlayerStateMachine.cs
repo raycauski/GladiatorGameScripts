@@ -14,6 +14,7 @@ public class PlayerStateMachine : MonoBehaviour
     public PlayerBaseState playerFallState = new PlayerFallState();
     public PlayerBaseState playerDashState = new PlayerDashState();
     public PlayerBaseState playerSprintState = new PlayerSprintState();
+    public PlayerBaseState playerCrouchState = new PlayerCrouchState();
     public CharacterController playerController { get; private set; }
     public PlayerInputManager playerInput { get; private set; }
     public GameObject playerCameraHolder;
@@ -111,6 +112,8 @@ public class PlayerStateMachine : MonoBehaviour
         }
         return false;
     }
+
+ 
     public void SetCurrentMovement(float newMaxSpeed, float newAcceleration)
     {
         // Called outside from other player states upon enterState to assign the movement parameters for that state.

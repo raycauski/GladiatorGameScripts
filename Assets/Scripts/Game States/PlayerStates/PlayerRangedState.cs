@@ -8,12 +8,15 @@ public class PlayerRangedState : PlayerBaseState
     private CharacterController controller;
     private PlayerInputManager playerInput;
     private GameObject playerCameraHolder;
+    private FPSCamera camFPS;
     private PlayerStateMachine stateMachine;
 
     private float maxSpeed = 4.5f;
     private float accelerationRate = 10f;
     private float maxSpeedAiming;
     private float aimSpeedMultiplier;
+
+
     
     public override void EnterState(PlayerStateMachine playerStateMachine)
     {
@@ -21,6 +24,7 @@ public class PlayerRangedState : PlayerBaseState
         controller = playerStateMachine.playerController;
         playerInput = playerStateMachine.playerInput;
         playerCameraHolder = playerStateMachine.playerCameraHolder;
+        camFPS = playerCameraHolder.GetComponent<FPSCamera>();
 
         maxSpeedAiming = maxSpeed * aimSpeedMultiplier;
 
@@ -29,30 +33,13 @@ public class PlayerRangedState : PlayerBaseState
     public override void LogicUpdate(PlayerStateMachine playerStateMachine)
     {
         CheckForSprint();
+        CheckForCrouch();
     }
     public override void ExitState(PlayerStateMachine playerStateMachine)
     {
-        
+    
     }
 
-
-    private bool IsAiming()
-    {
-        // Checks if player is aiming
-        if (playerInput.isAiming)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-
-    private void EnterDashState()
-    {
-
-    }
 
     private void CheckForSprint()
     {
@@ -60,6 +47,19 @@ public class PlayerRangedState : PlayerBaseState
         {
             Sprint();
         }
+    }
+
+    private void CheckForCrouch()
+    {
+        if (playerInput.isCrouching)
+        {
+            Crouch();
+        }
+    }
+
+    private void Crouch()
+    {
+        stateMachine.ChangeState(stateMachine.playerCrouchState);
     }
     private void Sprint()
     {

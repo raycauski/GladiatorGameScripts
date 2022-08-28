@@ -40,6 +40,9 @@ public class FPSCamera : MonoBehaviour
 
     private Vector3 camRotation = Vector3.zero;
     private Vector3 headOffset = Vector3.zero;
+    private float standingHeight = 0.68f;
+    private float crouchHeight = 0.26f;
+    private bool isCrouching = false;
 
     private void Awake()
     {
@@ -47,10 +50,11 @@ public class FPSCamera : MonoBehaviour
         startPos = cameraTransform.localPosition;
         playerTransform = player.transform;
         playerController = player.GetComponent<CharacterController>();
+        headOffset.y = standingHeight;
+        
     }
     void Start()
     {
-        headOffset = new Vector3(0f, 0.68f, 0f);
         playerInput = GameStateMachine.Instance.playerInputManager;
         holderTransform = this.transform;
 
@@ -81,6 +85,7 @@ public class FPSCamera : MonoBehaviour
             // Camera faces the direction of the focus target to straighten camera direction
             cameraTransform.LookAt(targetTransform);
         }
+        CameraCrouch();
         RotatePlayer();
     }
 
@@ -153,6 +158,25 @@ public class FPSCamera : MonoBehaviour
         {
             cameraTransform.localPosition = Vector3.Lerp(cameraTransform.localPosition, startPos, returnToStartSpeed * delta);
         }
+    }
+
+    private void CameraCrouch()
+    {
+        if (isCrouching)
+        {
+            Vector3 currentTargetHeight = new Vector3(0, crouchHeight, 0);
+            headOffset = Vector3.Lerp(headOffset, currentTargetHeight, returnToStartSpeed * Time.deltaTime);
+        }
+        else
+        {
+            Vector3 currentTargetHeight = new Vector3(0, standingHeight, 0);
+            headOffset = Vector3.Lerp(headOffset, currentTargetHeight, returnToStartSpeed * Time.deltaTime);
+        }
+    }
+
+    public void SetCrouching(bool crouchToggle)
+    {
+        isCrouching = crouchToggle;
     }
 
     private void RotatePlayer()
