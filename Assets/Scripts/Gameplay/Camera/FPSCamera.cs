@@ -41,7 +41,7 @@ public class FPSCamera : MonoBehaviour
     private Vector3 camRotation = Vector3.zero;
     private Vector3 headOffset = Vector3.zero;
     private float standingHeight = 0.68f;
-    private float crouchHeight = 0.26f;
+    private float crouchHeight = 0.16f;
     private bool isCrouching = false;
 
     private void Awake()

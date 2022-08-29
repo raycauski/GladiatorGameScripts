@@ -15,12 +15,18 @@ public class PlayerInputManager : MonoBehaviour
     private InputAction pause;
     private InputAction sprint;
     private InputAction crouch;
+    private InputAction dash;
 
     public Vector2 movementInput { get; private set; } = Vector2.zero;
     public Vector2 lookInput { get; private set; } = Vector2.zero;
     public bool isAiming { get; private set; } = false;
+    
     public bool isCrouching = false;
-    public bool isSprinting { get; private set; } = false;
+    public bool isSprinting = false;
+
+    public delegate void OnDashPress();
+    public static OnDashPress dashing;
+
 
     private void Awake()
     {
@@ -38,6 +44,7 @@ public class PlayerInputManager : MonoBehaviour
         pause = inputActions.PlayerControls.Pause;
         sprint = inputActions.PlayerControls.Sprint;
         crouch = inputActions.PlayerControls.Crouch;
+        dash = inputActions.PlayerControls.Dodge;
     }
     private void OnEnable()
     {
@@ -46,15 +53,20 @@ public class PlayerInputManager : MonoBehaviour
 
         movement.performed += SetMovement;
         movement.canceled += SetMovement;
+        movement.canceled += ResetSprint;
 
         look.performed += SetLook;
         look.canceled += SetLook;
 
-        sprint.performed += SetSprint;
+        sprint.performed += ToggleSprint;
         sprint.performed += ResetCrouch;
-        sprint.canceled += SetSprint;
 
         crouch.performed += ToggleCrouch;
+        crouch.performed += ResetSprint;
+
+        dash.performed += CallDash;
+        dash.performed += ResetCrouch;
+        dash.performed += ResetSprint;
 
         pause.performed += PauseGame;
         pause.canceled += PauseGame;
@@ -65,15 +77,20 @@ public class PlayerInputManager : MonoBehaviour
     {
         movement.performed -= SetMovement;
         movement.canceled -= SetMovement;
+        movement.canceled -= ResetSprint;
 
         look.performed -= SetLook;
         look.canceled -= SetLook;
 
-        sprint.performed -= SetSprint;
+        sprint.performed -= ToggleSprint;
         sprint.performed -= ResetCrouch;
-        sprint.canceled -= SetSprint;
         
         crouch.performed -= ToggleCrouch;
+        crouch.performed -= ResetSprint;
+
+        dash.performed -= CallDash;
+        dash.performed -= ResetCrouch;
+        dash.performed -= ResetSprint;
 
         pause.performed -= PauseGame;
         pause.canceled -= PauseGame;
@@ -102,11 +119,26 @@ public class PlayerInputManager : MonoBehaviour
     {
         isCrouching = false;
     }
+
+    private void ToggleSprint(InputAction.CallbackContext context)
+    {
+        isSprinting = !isSprinting;
+    }
+    private void ResetSprint(InputAction.CallbackContext context)
+    {
+        isSprinting = false;
+    }
+    /*
     private void SetSprint(InputAction.CallbackContext context)
     {
         isSprinting = context.performed;
     }
-
+    */
+    private void CallDash(InputAction.CallbackContext context)
+    {
+        Debug.Log("Dashing");
+        dashing();
+    }
 
     private void PauseGame(InputAction.CallbackContext context)
     {
