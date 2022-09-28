@@ -18,7 +18,7 @@ public class DevDebuggerTool : MonoBehaviour
         // shows current game state in top left corner
         currentGameState = GameStateMachine.Instance.currentState;
         GUI.Label(new Rect(20, 20, 400, 30), "Game State:" + currentGameState.ToString());
-        if (currentGameState == GameStateMachine.Instance.playerGameplayState)
+        if (currentGameState == GameStateMachine.Instance.playerGameplayState && playerStateMachine != null)
         {
             // Shows current player state in top right corner if available
             GUI.Label(new Rect(680, 20, 400, 30), ("Player State:" + playerStateMachine.currentState).ToString());

@@ -52,11 +52,11 @@ public class PlayerStateMachine : MonoBehaviour
 
     private void OnEnable()
     {
-        PlayerInputManager.dashing += Dash;
+        PlayerInputManager.dashEvent += Dash;
     }
     private void OnDisable()
     {
-        PlayerInputManager.dashing -= Dash;
+        PlayerInputManager.dashEvent -= Dash;
     }
 
     public void ChangeState(PlayerBaseState newState)
@@ -130,9 +130,10 @@ public class PlayerStateMachine : MonoBehaviour
         // Checks if player has a stair step below them to maintain grounded status.
         float stepHeight = playerController.stepOffset;
         RaycastHit hit;
-        if (Physics.Raycast(transform.position, Vector3.down, out hit, stepHeight) && !IsGrounded())
+        if (Physics.Raycast(transform.position, Vector3.down, out hit, stepHeight))
         {
-            playerVelocity.y = -50; // EXPERIMENTAL: force step down velocity when over a step
+            //playerVelocity.y = -50; // EXPERIMENTAL: force step down velocity when over a step
+            Debug.Log("Stairs");
             return true;
         }
         return false;

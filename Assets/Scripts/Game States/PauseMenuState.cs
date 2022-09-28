@@ -11,10 +11,6 @@ public class PauseMenuState : GameBaseState
         PauseGame();
     }
 
-    public override void LogicUpdate(GameStateMachine gameStateMachine)
-    {
-        
-    }
     public override void ExitState(GameStateMachine gameStateMachine)
     {
         UnpauseGame();

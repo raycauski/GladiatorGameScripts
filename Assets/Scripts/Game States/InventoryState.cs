@@ -9,10 +9,6 @@ public class InventoryState : GameBaseState
         
     }
 
-    public override void LogicUpdate(GameStateMachine gameStateMachine)
-    {
-        
-    }
 
     public override void ExitState(GameStateMachine gameStateMachine)
     {

@@ -5,14 +5,13 @@ using UnityEngine;
 // Player state for ranged gameplay, where character can  move and aim.
 public class PlayerRangedState : PlayerBaseState
 {
-    private CharacterController controller;
     private PlayerInputManager playerInput;
     private GameObject playerCameraHolder;
-    private FPSCamera camFPS;
+
     private PlayerStateMachine stateMachine;
 
     private float maxSpeed = 4.5f;
-    private float accelerationRate = 10f;
+    private float accelerationRate = 6.2f; // 10f
     private float maxSpeedAiming;
     private float aimSpeedMultiplier;
 
@@ -21,10 +20,8 @@ public class PlayerRangedState : PlayerBaseState
     public override void EnterState(PlayerStateMachine playerStateMachine)
     {
         stateMachine = playerStateMachine;
-        controller = playerStateMachine.playerController;
         playerInput = playerStateMachine.playerInput;
         playerCameraHolder = playerStateMachine.playerCameraHolder;
-        camFPS = playerCameraHolder.GetComponent<FPSCamera>();
 
         maxSpeedAiming = maxSpeed * aimSpeedMultiplier;
 

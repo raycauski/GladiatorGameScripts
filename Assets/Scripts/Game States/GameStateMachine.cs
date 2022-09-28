@@ -52,11 +52,13 @@ public class GameStateMachine : MonoBehaviour
         }
     }
 
+    /*  Currently no update needed outside of player loop, so commented for now
     private void Update()
     {
         //Update logic for current state
         currentState.LogicUpdate(this);
     }
+    */
 
     public void ChangeState(GameBaseState newState)
     {

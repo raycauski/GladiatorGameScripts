@@ -10,7 +10,7 @@ public abstract class GameBaseState
     // every frame through the state manager. Ref to state manager passed in every function
     public abstract void EnterState(GameStateMachine gameStateMachine);
     // Logic when entering current state
-    public abstract void LogicUpdate(GameStateMachine gameStateMachine);
+    //public abstract void LogicUpdate(GameStateMachine gameStateMachine);
     // Uses State machine monobehavior update to process update logic
   
     public abstract void ExitState(GameStateMachine gameStateMachine);

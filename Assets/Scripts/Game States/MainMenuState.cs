@@ -13,11 +13,6 @@ public class MainMenuState : GameBaseState
         gameStateMachine.menuInputManager.enabled = true;
     }
 
-    public override void LogicUpdate(GameStateMachine gameStateMachine)
-    {
-
-    }
-
     public override void ExitState(GameStateMachine gameStateMachine)
     {
         gameStateMachine.menuInputManager.enabled = false;

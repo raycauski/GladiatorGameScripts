@@ -165,6 +165,7 @@ public class PlayerCamera : MonoBehaviour
     private void AimZoom(float delta)
     {
         //Zooming in decreases cam FOV and slows camera sensitivity by the aim sens factor
+        /*
         if (playerInput.isAiming)
         {
             mainCamera.fieldOfView = Mathf.Lerp(mainCamera.fieldOfView, aimFOV, delta * zoomSpeed);//FOV zoom in
@@ -179,6 +180,7 @@ public class PlayerCamera : MonoBehaviour
             crosshairCanvas.alpha = Mathf.Lerp(crosshairCanvas.alpha, 0, delta * zoomSpeed * 2); //crosshair fade out
             // Player will no longer rotate
         }
+        */
         
     }
 

@@ -16,11 +16,6 @@ public class PlayerGameplayState : GameBaseState
         gameStateMachine.playerInputManager.enabled = true;
     }
 
-    public override void LogicUpdate(GameStateMachine gameStateMachine)
-    {
-        
-    }
-
     public override void ExitState(GameStateMachine gameStateMachine)
     {
         playerStateMachine.enabled = false;

@@ -11,8 +11,6 @@ public class PlayerDashState : PlayerBaseState
     private float dashSpeed = 12f;
     private float dashDeceleration = 6f;
 
-    private float dashMovementSpeed = 0f;
-    private float dashAccelRate = 0f;
 
     private Vector2 dashDirection;
     public Vector3 dashVelocity { get; private set; } = Vector3.zero;

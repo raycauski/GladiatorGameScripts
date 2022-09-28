@@ -8,6 +8,7 @@ public class FPSCamera : MonoBehaviour
     [SerializeField] private GameObject player;
     private Transform playerTransform;
     private CharacterController playerController;
+    [SerializeField] private Camera playerCamera;
     [SerializeField] private Transform cameraTransform;
     private Transform holderTransform;
     [SerializeField] private Transform targetTransform;
@@ -23,10 +24,11 @@ public class FPSCamera : MonoBehaviour
     public bool verticalAimIsInverted = false;
     private int aimXInvert = 1;
     private int aimYInvert = 1;
+    private float FOV;
 
     public float rotationSpeed = 50f;
 
-    [SerializeField] private bool headBobEnabled = true;
+    [SerializeField] private bool headBobEnabled = false;
 
     [SerializeField, Range(0, 0.005f)] private float amplitude;
     [SerializeField, Range(0, 30)] private float frequency = 10.0f;
@@ -46,11 +48,7 @@ public class FPSCamera : MonoBehaviour
 
     private void Awake()
     {
-        // Record starting local position of camera to return to when not moving.
-        startPos = cameraTransform.localPosition;
-        playerTransform = player.transform;
-        playerController = player.GetComponent<CharacterController>();
-        headOffset.y = standingHeight;
+        InitializeVars();
         
     }
     void Start()
@@ -184,6 +182,23 @@ public class FPSCamera : MonoBehaviour
         // Rotates player controller to face same y angle as camera. 
         float targetRotation = Mathf.LerpAngle(playerTransform.transform.eulerAngles.y, holderTransform.transform.eulerAngles.y, rotationSpeed * Time.deltaTime);
         playerTransform.transform.eulerAngles = new Vector3(0, targetRotation, 0);
+    }
+
+    public void WarpFOV(float degrees)
+    {
+        float currentFOV = playerCamera.fieldOfView;
+        float targetFOV = Mathf.Lerp(currentFOV, degrees, returnToStartSpeed * Time.deltaTime);
+        playerCamera.fieldOfView = targetFOV;
+    }
+
+    private void InitializeVars()
+    {
+        // Record starting local position of camera to return to when not moving.
+        startPos = cameraTransform.localPosition;
+        playerTransform = player.transform;
+        playerController = player.GetComponent<CharacterController>();
+        headOffset.y = standingHeight;
+        FOV = playerCamera.fieldOfView;
     }
     
 }

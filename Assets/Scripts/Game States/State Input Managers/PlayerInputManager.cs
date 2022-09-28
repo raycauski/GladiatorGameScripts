@@ -5,46 +5,91 @@ using UnityEngine.InputSystem;
 
 public class PlayerInputManager : MonoBehaviour
 {
+
     // Input
     private PlayerInputActions inputActions;
 
     // Actions
+    // Movement
     private InputAction movement;
-    private InputAction aim;
     private InputAction look;
-    private InputAction pause;
+    private InputAction dash;
+    private InputAction jump;
     private InputAction sprint;
     private InputAction crouch;
-    private InputAction dash;
+
+    // Melee
+    private InputAction attack;
+    private InputAction attackHeavy;
+    private InputAction attackSpecial;
+    private InputAction parry;
+    private InputAction block;
+
+    // Gun
+    private InputAction swap;
+    private InputAction reload;
+    private InputAction aim;
+    private InputAction fire;
+    
+    // Menu
+    private InputAction interact;
+    private InputAction pause;
+    private InputAction inventory;
 
     public Vector2 movementInput { get; private set; } = Vector2.zero;
     public Vector2 lookInput { get; private set; } = Vector2.zero;
-    public bool isAiming { get; private set; } = false;
     
     public bool isCrouching = false;
     public bool isSprinting = false;
 
+    // Events
     public delegate void OnDashPress();
-    public static OnDashPress dashing;
+    public static OnDashPress dashEvent;
+
+    public delegate void OnJump();
+    public static OnJump jumpEvent;
+
+    public delegate void OnAttack();
+    public static OnAttack attackEvent;
+
+    public delegate void OnAttackHeavy();
+    public static OnAttackHeavy attackHeavyEvent;
+
+    public delegate void OnAttackSpecial();
+    public static OnAttackSpecial attackSpecialEvent;
+
+    public delegate void OnParry();
+    public static OnParry parryEvent;
+
+   
 
 
     private void Awake()
     {
+        // TEST
         inputActions = new PlayerInputActions();
         CreateActions();
-
-        aim.performed += context => SetAim(true);
-        aim.canceled += context => SetAim(false);
     }
     private void CreateActions()
     {
-        movement = inputActions.PlayerControls.Movement;
-        aim = inputActions.PlayerControls.AimIn;
-        look = inputActions.PlayerControls.Look;
-        pause = inputActions.PlayerControls.Pause;
-        sprint = inputActions.PlayerControls.Sprint;
-        crouch = inputActions.PlayerControls.Crouch;
-        dash = inputActions.PlayerControls.Dodge;
+        movement =      inputActions.PlayerControls.Movement;
+        look =          inputActions.PlayerControls.Look;
+        dash =          inputActions.PlayerControls.Dodge;
+        jump =          inputActions.PlayerControls.Jump;
+        sprint =        inputActions.PlayerControls.Sprint;
+        crouch =        inputActions.PlayerControls.Crouch;
+        attack =        inputActions.PlayerControls.Attack;
+        attackHeavy =   inputActions.PlayerControls.AttackHeavy;
+        attackSpecial = inputActions.PlayerControls.AttackSpecial;
+        parry =         inputActions.PlayerControls.Parry;
+        block =         inputActions.PlayerControls.Block;
+        swap =          inputActions.PlayerControls.Swap;
+        reload =        inputActions.PlayerControls.Reload;
+        aim =           inputActions.PlayerControls.AimIn;
+        fire =          inputActions.PlayerControls.Fire;
+        interact =      inputActions.PlayerControls.Interact;
+        pause =         inputActions.PlayerControls.Pause;
+        inventory =     inputActions.PlayerControls.Inventory;
     }
     private void OnEnable()
     {
@@ -53,63 +98,128 @@ public class PlayerInputManager : MonoBehaviour
 
         movement.performed += SetMovement;
         movement.canceled += SetMovement;
-        movement.canceled += ResetSprint;
 
         look.performed += SetLook;
         look.canceled += SetLook;
-
-        sprint.performed += ToggleSprint;
-        sprint.performed += ResetCrouch;
-
-        crouch.performed += ToggleCrouch;
-        crouch.performed += ResetSprint;
 
         dash.performed += CallDash;
         dash.performed += ResetCrouch;
         dash.performed += ResetSprint;
 
-        pause.performed += PauseGame;
-        pause.canceled += PauseGame;
+        jump.performed += SetJump;
 
+        sprint.performed += ToggleSprint;
+        sprint.canceled += ResetSprint;
+        sprint.performed += ResetCrouch;
+
+        crouch.performed += ToggleCrouch;
+        crouch.performed += ResetSprint;
+
+        attack.performed += SetAttack;
+
+        attackHeavy.performed += SetAttackHeavy;
+
+        attackSpecial.performed += SetAttackSpecial;
+
+        parry.performed += SetParry;
+
+        block.performed += SetBlock;
+
+        swap.performed += SetSwap;
+
+        reload.performed += SetReload;
+
+        aim.performed += SetAim;
+
+        fire.performed += SetFire;
+
+        interact.performed += SetInteract;
+
+        pause.performed += PauseGame;
 
     }
     private void OnDisable()
     {
         movement.performed -= SetMovement;
         movement.canceled -= SetMovement;
-        movement.canceled -= ResetSprint;
 
         look.performed -= SetLook;
         look.canceled -= SetLook;
-
-        sprint.performed -= ToggleSprint;
-        sprint.performed -= ResetCrouch;
-        
-        crouch.performed -= ToggleCrouch;
-        crouch.performed -= ResetSprint;
 
         dash.performed -= CallDash;
         dash.performed -= ResetCrouch;
         dash.performed -= ResetSprint;
 
+        jump.performed -= SetJump;
+
+        sprint.performed -= ToggleSprint;
+        sprint.canceled -= ResetSprint;
+        sprint.performed -= ResetCrouch;
+
+        crouch.performed -= ToggleCrouch;
+        crouch.performed -= ResetSprint;
+
+        attack.performed -= SetAttack;
+
+        attackHeavy.performed -= SetAttackHeavy;
+
+        attackSpecial.performed -= SetAttackSpecial;
+
+        parry.performed -= SetParry;
+
+        block.performed -= SetBlock;
+
+        swap.performed -= SetSwap;
+
+        reload.performed -= SetReload;
+
+        aim.performed -= SetAim;
+
+        fire.performed -= SetFire;
+
+        interact.performed -= SetInteract;
+
         pause.performed -= PauseGame;
-        pause.canceled -= PauseGame;
 
         ResetInputValues();
         inputActions.PlayerControls.Disable();
     }
+
+    // MOVEMENT  ---------------------------------------------------------------
     private void SetMovement(InputAction.CallbackContext context)
     {
         movementInput = context.ReadValue<Vector2>();
     }
+
+    // LOOK      ---------------------------------------------------------------
     private void SetLook(InputAction.CallbackContext context)
     {
         lookInput = context.ReadValue<Vector2>();
     }
-    private void SetAim(bool aimToggle)
+    // DODGE     ---------------------------------------------------------------
+    private void CallDash(InputAction.CallbackContext context)
     {
-        isAiming = aimToggle;
+        Debug.Log("Dashing");
+        dashEvent();
     }
+
+    // JUMP      ---------------------------------------------------------------
+    private void SetJump(InputAction.CallbackContext context)
+    {
+        Debug.Log("JUMP");
+    }
+
+    // SPRINT    ---------------------------------------------------------------
+    private void ToggleSprint(InputAction.CallbackContext context)
+    {
+        isSprinting = true;
+    }
+    private void ResetSprint(InputAction.CallbackContext context)
+    {
+        isSprinting = false;
+    }
+
+    // CROUCH    ---------------------------------------------------------------
     private void ToggleCrouch(InputAction.CallbackContext context)
     {
         // Toggles between crouching
@@ -120,30 +230,67 @@ public class PlayerInputManager : MonoBehaviour
         isCrouching = false;
     }
 
-    private void ToggleSprint(InputAction.CallbackContext context)
+    // ATTACK    ---------------------------------------------------------------
+    private void SetAttack(InputAction.CallbackContext context)
     {
-        isSprinting = !isSprinting;
-    }
-    private void ResetSprint(InputAction.CallbackContext context)
-    {
-        isSprinting = false;
-    }
-    /*
-    private void SetSprint(InputAction.CallbackContext context)
-    {
-        isSprinting = context.performed;
-    }
-    */
-    private void CallDash(InputAction.CallbackContext context)
-    {
-        Debug.Log("Dashing");
-        dashing();
+        Debug.Log("Attack");
     }
 
+    // HEAVY     ---------------------------------------------------------------
+    private void SetAttackHeavy(InputAction.CallbackContext context)
+    {
+        Debug.Log("Heavy Attack");
+    }
+
+    // SPECIAL   ---------------------------------------------------------------
+    private void SetAttackSpecial(InputAction.CallbackContext context)
+    {
+        Debug.Log("Special Attack");
+    }
+
+    // PARRY     ---------------------------------------------------------------
+    private void SetParry(InputAction.CallbackContext context)
+    {
+        Debug.Log("Parry");
+    }
+
+    // BLOCK     ---------------------------------------------------------------
+    private void SetBlock(InputAction.CallbackContext context)
+    {
+        Debug.Log("Block");
+    }
+    // SWAP      ---------------------------------------------------------------
+    private void SetSwap(InputAction.CallbackContext context)
+    {
+        Debug.Log("Swapping");
+    }
+    // RELOAD    ---------------------------------------------------------------
+    private void SetReload(InputAction.CallbackContext context)
+    {
+        Debug.Log("Reloading");
+    }
+    // AIM       ---------------------------------------------------------------
+    private void SetAim(InputAction.CallbackContext context)
+    {
+        Debug.Log("Aiming");
+    }
+    // FIRE      ---------------------------------------------------------------
+    private void SetFire(InputAction.CallbackContext context)
+    {
+        Debug.Log("Firing");
+    }
+    // INTERACT  ---------------------------------------------------------------
+    private void SetInteract(InputAction.CallbackContext context)
+    {
+        Debug.Log("Interacting");
+    }
+    // PAUSE     ---------------------------------------------------------------
     private void PauseGame(InputAction.CallbackContext context)
     {
         GameStateMachine.Instance.ChangeState(GameStateMachine.Instance.pauseMenuState);
     }
+    // INVENTORY ---------------------------------------------------------------
+
 
     private void ResetInputValues()
     {

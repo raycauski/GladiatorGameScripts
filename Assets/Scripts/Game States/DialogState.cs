@@ -9,10 +9,6 @@ public class DialogState : GameBaseState
         
     }
 
-    public override void LogicUpdate(GameStateMachine gameStateMachine)
-    {
-      
-    }
 
     public override void ExitState(GameStateMachine gameStateMachine)
     {
