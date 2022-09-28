@@ -6,7 +6,7 @@
 TEXTURE2D(_DepthNormalsTexture); SAMPLER(sampler_DepthNormalsTexture);
 
 // The sobel effect runs by sampling the texture around a point to see
-// if there are any large changes. Each sample is multiplied by a convolution
+// if there are any large changes. Each sample is multiplied by a
 // matrix weight for the x and y components seperately. Each value is then
 // added together, and the final sobel value is the length of the resulting float2.
 // Higher values mean the algorithm detected more of an edge
