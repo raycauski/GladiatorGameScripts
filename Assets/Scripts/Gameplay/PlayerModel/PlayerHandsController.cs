@@ -6,6 +6,7 @@ public class PlayerHandsController : MonoBehaviour
 {
     [SerializeField] private Transform handHolder;
     [SerializeField] private Animator handAnimator;
+    [SerializeField] private ParticleSystem swordParticles;
 
     private PlayerStateMachine playerStateMachine;
     private PlayerInputManager playerInput;
@@ -23,7 +24,6 @@ public class PlayerHandsController : MonoBehaviour
     }
 
     private float blendSpeed = 5.5f;
-
 
     void Start()
     {
@@ -83,8 +83,10 @@ public class PlayerHandsController : MonoBehaviour
     {
 
     }
+
     public void PlayAttackAnim()
     {
+        StartCoroutine(SwordTrails());
         switch (currentDirection)
         {
             case Direction.Up:
@@ -100,5 +102,53 @@ public class PlayerHandsController : MonoBehaviour
                 handAnimator.SetTrigger("AttackDown");
                 break;
         }
+    }
+
+    public IEnumerator SwordTrails()
+    {
+        if (swordParticles == null)
+        {
+            yield break;
+        }
+        yield return new WaitForSeconds(0.2f);
+        swordParticles.Play();
+        yield return new WaitForSeconds(0.12f);
+        swordParticles.Stop();
+    }
+
+
+    public void SetCrouchAnimation(bool mode)
+    {
+        handAnimator.SetBool("isCrouching", mode);
+    }
+
+    public void SetSprintAnimation(bool mode)
+    {
+        handAnimator.SetBool("isSprinting", mode);
+    }
+ 
+
+    public void PlayParryAnimation()
+    {
+        switch (currentDirection)
+        {
+            case Direction.Up:
+                handAnimator.SetTrigger("ParryUp");
+                break;
+            case Direction.Right:
+                handAnimator.SetTrigger("ParryRight");
+                break;
+            case Direction.Left:
+                handAnimator.SetTrigger("ParryLeft");
+                break;
+            case Direction.Down:
+                handAnimator.SetTrigger("ParryDown");
+                break;
+        }
+    }
+
+    public void SetBlockAnimation(bool mode)
+    {
+        handAnimator.SetBool("isBlocking", mode);
     }
 }

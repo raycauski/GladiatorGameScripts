@@ -10,13 +10,23 @@ public class PlayerStateMachine : MonoBehaviour
     public PlayerBaseState currentState { get; private set; }
     public PlayerBaseState previousState { get; private set; }
 
+    /*
     public PlayerBaseState playerRangedState = new PlayerRangedState();
     public PlayerBaseState playerFallState = new PlayerFallState();
     public PlayerBaseState playerDashState = new PlayerDashState();
     public PlayerBaseState playerSprintState = new PlayerSprintState();
     public PlayerBaseState playerCrouchState = new PlayerCrouchState();
+    */
+    public PlayerBaseState playerRangedState;
+    public PlayerBaseState playerFallState;
+    public PlayerBaseState playerDashState;
+    public PlayerBaseState playerSprintState;
+    public PlayerBaseState playerCrouchState;
+
     public CharacterController playerController { get; private set; }
     public PlayerInputManager playerInput { get; private set; }
+    public PlayerHandsController playerHands { get; private set; }
+
     public GameObject playerCameraHolder;
     public Vector3 playerVelocity = Vector3.zero;
     
@@ -34,8 +44,17 @@ public class PlayerStateMachine : MonoBehaviour
 
     private void Start()
     {
+        playerRangedState = gameObject.AddComponent<PlayerRangedState>();
+        playerFallState = gameObject.AddComponent<PlayerFallState>();
+        playerDashState = gameObject.AddComponent<PlayerDashState>();
+        playerSprintState = gameObject.AddComponent<PlayerSprintState>();
+        playerCrouchState = gameObject.AddComponent<PlayerCrouchState>();
+       
+
         playerController = GetComponent<CharacterController>();
         playerInput = GameStateMachine.Instance.GetComponent<PlayerInputManager>();
+        playerHands = GetComponent<PlayerHandsController>();
+
         // enters player Ranged State by default on startup.
         playerRangedState.EnterState(this);
         currentState = playerRangedState;
@@ -46,25 +65,18 @@ public class PlayerStateMachine : MonoBehaviour
         CheckFalling();
         ApplyGravity();
         HandleMovement();
-        currentState.LogicUpdate(this);
-        
-    }
-
-    private void OnEnable()
-    {
-        PlayerInputManager.dashEvent += Dash;
-    }
-    private void OnDisable()
-    {
-        PlayerInputManager.dashEvent -= Dash;
+        currentState.LogicUpdate();
     }
 
     public void ChangeState(PlayerBaseState newState)
     {
         // Changes between states, storing previous and new states and applying enter/exit logic for current state.
         previousState = currentState;
-        currentState.ExitState(this);
+        currentState.ExitState();
+        currentState.enabled = false;
+        newState.enabled = true;
         currentState = newState;
+        
         newState.EnterState(this);
     }
 
@@ -90,9 +102,6 @@ public class PlayerStateMachine : MonoBehaviour
         {
             playerController.Move(currentVelocity * Time.deltaTime); // standard movement for most cases
         }
-        
-        
-       
     }
     private void ApplyGravity()
     {
@@ -139,29 +148,6 @@ public class PlayerStateMachine : MonoBehaviour
         return false;
     }
 
-    public void Dash()
-    {
-        if (!isDashing)
-        {
-            isDashing = true;
-            ChangeState(playerDashState);
-            StartCoroutine(DashTimer());
-        }
-    }
-
-    private IEnumerator DashTimer()
-    {
-        yield return new WaitForSeconds(0.5f);
-        isDashing = false;
-        ChangeState(playerRangedState);
-        dashVelocity = Vector3.zero;
-    }
-
-    public void SetDashVelocity(Vector3 newVelocity)
-    {
-        dashVelocity = newVelocity;
-    }
- 
     public void SetCurrentMovement(float newMaxSpeed, float newAcceleration)
     {
         // Called outside from other player states upon enterState to assign the movement parameters for that state.

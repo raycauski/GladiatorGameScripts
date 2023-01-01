@@ -10,6 +10,7 @@ public class PlayerDashState : PlayerBaseState
 
     private float dashSpeed = 12f;
     private float dashDeceleration = 6f;
+    private float dashTime = 0.5f;
 
 
     private Vector2 dashDirection;
@@ -19,14 +20,14 @@ public class PlayerDashState : PlayerBaseState
         stateMachine = playerStateMachine;
         playerInput = stateMachine.playerInput;
         playerController = stateMachine.playerController;
+  
         CalculateDashTrajectory();
-        
     }
-    public override void LogicUpdate(PlayerStateMachine playerStateMachine)
+    public override void LogicUpdate()
     {
         DashMovement();
     }
-    public override void ExitState(PlayerStateMachine playerStateMachine)
+    public override void ExitState()
     {
         dashVelocity = Vector3.zero;
     }
@@ -43,11 +44,24 @@ public class PlayerDashState : PlayerBaseState
         }
         dashVelocity = Quaternion.Euler(0, playerController.transform.eulerAngles.y, 0) *
             new Vector3(dashDirection.x, stateMachine.playerVelocity.y, dashDirection.y); // alligns direction with player facing direction
+        
+        StartCoroutine(DashTimer());    // Starts Dash coroutine
+    }
+
+    private IEnumerator DashTimer()
+    {
+        yield return new WaitForSeconds(dashTime);
+        stateMachine.ChangeState(stateMachine.playerRangedState);
+    }
+
+    public void SetDashVelocity(Vector3 newVelocity)
+    {
+       stateMachine.SetCurrentMovement(0, 0);
     }
     private void DashMovement()
     {
         // Creates a smooth dash that starts fast and slows to 0.
         dashVelocity = Vector3.Lerp(dashVelocity, new Vector3(0, stateMachine.playerVelocity.y, 0), dashDeceleration * Time.deltaTime);
-        stateMachine.SetDashVelocity(dashVelocity);
+        SetDashVelocity(dashVelocity);
     }
 }

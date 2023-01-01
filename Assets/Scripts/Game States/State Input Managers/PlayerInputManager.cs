@@ -41,6 +41,7 @@ public class PlayerInputManager : MonoBehaviour
     
     public bool isCrouching = false;
     public bool isSprinting = false;
+    public bool isBlocking = false;
 
     // Events
     public delegate void OnDashPress();
@@ -60,8 +61,6 @@ public class PlayerInputManager : MonoBehaviour
 
     public delegate void OnParry();
     public static OnParry parryEvent;
-
-   
 
 
     private void Awake()
@@ -102,7 +101,7 @@ public class PlayerInputManager : MonoBehaviour
         look.performed += SetLook;
         look.canceled += SetLook;
 
-        dash.performed += CallDash;
+        dash.performed += SetDash;
         dash.performed += ResetCrouch;
         dash.performed += ResetSprint;
 
@@ -124,6 +123,7 @@ public class PlayerInputManager : MonoBehaviour
         parry.performed += SetParry;
 
         block.performed += SetBlock;
+        block.canceled += ResetBlock;
 
         swap.performed += SetSwap;
 
@@ -146,7 +146,7 @@ public class PlayerInputManager : MonoBehaviour
         look.performed -= SetLook;
         look.canceled -= SetLook;
 
-        dash.performed -= CallDash;
+        dash.performed -= SetDash;
         dash.performed -= ResetCrouch;
         dash.performed -= ResetSprint;
 
@@ -168,6 +168,7 @@ public class PlayerInputManager : MonoBehaviour
         parry.performed -= SetParry;
 
         block.performed -= SetBlock;
+        block.canceled -= ResetBlock;
 
         swap.performed -= SetSwap;
 
@@ -197,16 +198,20 @@ public class PlayerInputManager : MonoBehaviour
         lookInput = context.ReadValue<Vector2>();
     }
     // DODGE     ---------------------------------------------------------------
-    private void CallDash(InputAction.CallbackContext context)
+    private void SetDash(InputAction.CallbackContext context)
     {
-        Debug.Log("Dashing");
-        dashEvent();
+        //Debug.Log("Dashing");
+        if (dashEvent != null)
+        {
+            dashEvent();
+        }
+        
     }
 
     // JUMP      ---------------------------------------------------------------
     private void SetJump(InputAction.CallbackContext context)
     {
-        Debug.Log("JUMP");
+        //Debug.Log("JUMP");
     }
 
     // SPRINT    ---------------------------------------------------------------
@@ -233,56 +238,79 @@ public class PlayerInputManager : MonoBehaviour
     // ATTACK    ---------------------------------------------------------------
     private void SetAttack(InputAction.CallbackContext context)
     {
-        Debug.Log("Attack");
+        //Debug.Log("Attack");
+        if (attackEvent != null)
+        {
+            attackEvent();
+        }
     }
 
     // HEAVY     ---------------------------------------------------------------
     private void SetAttackHeavy(InputAction.CallbackContext context)
     {
-        Debug.Log("Heavy Attack");
+        //Debug.Log("Heavy Attack");
+        if (attackHeavyEvent != null)
+        {
+            attackHeavyEvent();
+        }
     }
 
     // SPECIAL   ---------------------------------------------------------------
     private void SetAttackSpecial(InputAction.CallbackContext context)
     {
-        Debug.Log("Special Attack");
+        // Debug.Log("Special Attack");
+        if (attackSpecialEvent != null)
+        {
+            attackSpecialEvent();
+        }
     }
 
     // PARRY     ---------------------------------------------------------------
     private void SetParry(InputAction.CallbackContext context)
     {
-        Debug.Log("Parry");
+        //Debug.Log("Parry");
+        if (parryEvent != null)
+        {
+            parryEvent();
+        }
     }
 
     // BLOCK     ---------------------------------------------------------------
     private void SetBlock(InputAction.CallbackContext context)
     {
-        Debug.Log("Block");
+        isBlocking = true;
+        //Debug.Log("Block");
+    }
+
+    private void ResetBlock(InputAction.CallbackContext context)
+    {
+        isBlocking = false;
+        //Debug.Log("Block Cancelled");
     }
     // SWAP      ---------------------------------------------------------------
     private void SetSwap(InputAction.CallbackContext context)
     {
-        Debug.Log("Swapping");
+        //Debug.Log("Swapping");
     }
     // RELOAD    ---------------------------------------------------------------
     private void SetReload(InputAction.CallbackContext context)
     {
-        Debug.Log("Reloading");
+        //Debug.Log("Reloading");
     }
     // AIM       ---------------------------------------------------------------
     private void SetAim(InputAction.CallbackContext context)
     {
-        Debug.Log("Aiming");
+        //Debug.Log("Aiming");
     }
     // FIRE      ---------------------------------------------------------------
     private void SetFire(InputAction.CallbackContext context)
     {
-        Debug.Log("Firing");
+       // Debug.Log("Firing");
     }
     // INTERACT  ---------------------------------------------------------------
     private void SetInteract(InputAction.CallbackContext context)
     {
-        Debug.Log("Interacting");
+        //Debug.Log("Interacting");
     }
     // PAUSE     ---------------------------------------------------------------
     private void PauseGame(InputAction.CallbackContext context)

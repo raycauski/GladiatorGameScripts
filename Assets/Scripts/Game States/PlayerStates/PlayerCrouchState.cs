@@ -18,22 +18,26 @@ public class PlayerCrouchState : PlayerBaseState
         playerInput = stateMachine.playerInput;
         playerCameraHolder = playerStateMachine.playerCameraHolder;
         camFPS = playerCameraHolder.GetComponent<FPSCamera>();
+ 
         EnableCrouch();
     }
-    public override void LogicUpdate(PlayerStateMachine playerStateMachine)
+    public override void LogicUpdate()
     {
         CheckDisableCrouch();
     }
-    public override void ExitState(PlayerStateMachine playerStateMachine)
+    public override void ExitState()
     {
         playerInput.isCrouching = false;
         camFPS.SetCrouching(false);
+        stateMachine.playerHands.SetCrouchAnimation(false); // Anim
     }
 
     private void EnableCrouch()
     {
+
         stateMachine.SetCurrentMovement(maxSpeedCrouch, accelerationCrouch);
         camFPS.SetCrouching(true);
+        stateMachine.playerHands.SetCrouchAnimation(true); // Anim
     }
     private void CheckDisableCrouch()
     {

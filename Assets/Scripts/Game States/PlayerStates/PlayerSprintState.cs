@@ -15,18 +15,19 @@ public class PlayerSprintState : PlayerBaseState
         playerInput = stateMachine.playerInput;
         EnableSprint();
     }
-    public override void LogicUpdate(PlayerStateMachine playerStateMachine)
+    public override void LogicUpdate()
     {
         CheckDisableSprint();
     }
-    public override void ExitState(PlayerStateMachine playerStateMachine)
+    public override void ExitState()
     {
-
+        stateMachine.playerHands.SetSprintAnimation(false); // Anim
     }
 
     private void EnableSprint()
     {
         stateMachine.SetCurrentMovement(sprintSpeed, sprintAccelerationRate);
+        stateMachine.playerHands.SetSprintAnimation(true); // Anim
     }
 
     private void CheckDisableSprint()

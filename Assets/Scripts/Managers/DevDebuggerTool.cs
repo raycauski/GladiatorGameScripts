@@ -11,10 +11,18 @@ public class DevDebuggerTool : MonoBehaviour
     private void Start()
     {
         gameStateMachine = GameStateMachine.Instance;
+        if (!GameManager.Instance.GetPlayer())
+        {
+            return;
+        }
         playerStateMachine = GameManager.Instance.GetPlayer().GetComponent<PlayerStateMachine>();
     }
     private void OnGUI()
     {
+        if (playerStateMachine == null)
+        {
+            return;
+        }
         // shows current game state in top left corner
         currentGameState = GameStateMachine.Instance.currentState;
         GUI.Label(new Rect(20, 20, 400, 30), "Game State:" + currentGameState.ToString());

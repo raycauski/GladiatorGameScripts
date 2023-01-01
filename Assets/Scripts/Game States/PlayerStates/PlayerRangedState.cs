@@ -27,40 +27,68 @@ public class PlayerRangedState : PlayerBaseState
 
         playerStateMachine.SetCurrentMovement(maxSpeed, accelerationRate);
     }
-    public override void LogicUpdate(PlayerStateMachine playerStateMachine)
+    public override void LogicUpdate()
     {
-        CheckForSprint();
-        CheckForCrouch();
+        CheckStateChange();
+
+       
+        
+        stateMachine.playerHands.SetBlockAnimation(playerInput.isBlocking);
+        
+
     }
-    public override void ExitState(PlayerStateMachine playerStateMachine)
+    public override void ExitState()
     {
     
     }
 
-
-    private void CheckForSprint()
+    private void OnEnable()
     {
-        if (playerInput.isSprinting && playerInput.movementInput != Vector2.zero)
-        {
-            Sprint();
-        }
+        PlayerInputManager.dashEvent += Dash;
+        PlayerInputManager.attackEvent += Attack;
+        PlayerInputManager.parryEvent += Parry;
+
+    }
+    private void OnDisable()
+    {
+        PlayerInputManager.dashEvent -= Dash;
+        PlayerInputManager.attackEvent -= Attack;
+        PlayerInputManager.parryEvent -= Parry;
     }
 
-    private void CheckForCrouch()
+
+    private void CheckStateChange()
     {
         if (playerInput.isCrouching)
         {
-            Crouch();
+            stateMachine.ChangeState(stateMachine.playerCrouchState);
+        }
+        else if (playerInput.isSprinting)
+        {
+            if (playerInput.movementInput != Vector2.zero)
+            {
+                stateMachine.ChangeState(stateMachine.playerSprintState);
+            }
         }
     }
 
-    private void Crouch()
+
+    public void Dash()
     {
-        stateMachine.ChangeState(stateMachine.playerCrouchState);
+            stateMachine.ChangeState(stateMachine.playerDashState);
     }
-    private void Sprint()
+
+    public void Attack()
     {
-        stateMachine.ChangeState(stateMachine.playerSprintState);
+        stateMachine.playerHands.PlayAttackAnim();
     }
+
+    public void Parry()
+    {
+        stateMachine.playerHands.PlayParryAnimation();
+
+    }
+
+  
 
 }
