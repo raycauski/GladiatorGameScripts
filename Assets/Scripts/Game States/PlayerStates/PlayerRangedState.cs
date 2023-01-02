@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 // Player state for ranged gameplay, where character can  move and aim.
 public class PlayerRangedState : PlayerBaseState
@@ -20,7 +21,13 @@ public class PlayerRangedState : PlayerBaseState
     public override void LogicUpdate()
     {
         CheckStateChange();
-        PlayerMovement.playerHands.SetBlockAnimation(PlayerInput.isBlocking);
+   
+
+        if (PlayerInput.attack.triggered)
+        {
+            Attack();
+        }
+        //PlayerMovement.playerHands.SetBlockAnimation(PlayerInput.isBlocking);
 
     }
     public override void ExitState()
@@ -30,16 +37,16 @@ public class PlayerRangedState : PlayerBaseState
 
     private void OnEnable()
     {
-        PlayerInputManager.dashEvent += Dash;
-        PlayerInputManager.attackEvent += Attack;
-        PlayerInputManager.parryEvent += Parry;
+        PlayerInput.dash.performed += Dash;
+       // PlayerInput.attack.performed += Attack;
+        PlayerInput.parry.performed += Parry;
 
     }
     private void OnDisable()
     {
-        PlayerInputManager.dashEvent -= Dash;
-        PlayerInputManager.attackEvent -= Attack;
-        PlayerInputManager.parryEvent -= Parry;
+        PlayerInput.dash.performed -= Dash;
+        //PlayerInput.attack.performed -= Attack;
+        PlayerInput.parry.performed -= Parry;
     }
 
 
@@ -49,7 +56,7 @@ public class PlayerRangedState : PlayerBaseState
         {
             StateMachine.ChangeState(StateMachine.playerCrouchState);
         }
-        else if (PlayerInput.isSprinting)
+        else if (PlayerInput.sprint.IsPressed())
         {
             if (PlayerInput.movementInput != Vector2.zero)
             {
@@ -58,7 +65,7 @@ public class PlayerRangedState : PlayerBaseState
         }
     }
 
-    public void Dash()
+    public void Dash(InputAction.CallbackContext context) 
     {
             StateMachine.ChangeState(StateMachine.playerDashState);
     }
@@ -69,7 +76,7 @@ public class PlayerRangedState : PlayerBaseState
         PlayerMovement.playerHands.PlayAttackAnim();
     }
 
-    public void Parry()
+    public void Parry(InputAction.CallbackContext context)
     {
         // TODO change to weapon
         PlayerMovement.playerHands.PlayParryAnimation();

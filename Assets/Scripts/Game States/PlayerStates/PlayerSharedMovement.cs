@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerSharedMovement : MonoBehaviour
 {
@@ -22,7 +23,12 @@ public class PlayerSharedMovement : MonoBehaviour
     [SerializeField] private float accelerationRate = 10f;
 
     public bool isDashing = false;
+    [SerializeField] private float dashDeceleration = 6f;
     public Vector3 dashVelocity { get; private set; } = Vector3.zero;
+
+    private bool isJumping = false;
+    public bool inCoyoteTime = false;
+    private float coyoteTime = 0.15f;
 
 
     private void Start()
@@ -32,11 +38,13 @@ public class PlayerSharedMovement : MonoBehaviour
         PlayerInput = StateMachine.playerInput;
         playerHands = GetComponent<PlayerHandsController>();
     }
+
     public void LogicUpdate()
     {
         CheckFalling();
         ApplyGravity();
         HandleMovement();
+        CheckStateChange();
     }
 
     private void HandleMovement()
@@ -55,6 +63,7 @@ public class PlayerSharedMovement : MonoBehaviour
         // Apply Standard Movement per frame
         if (isDashing)
         {
+            dashVelocity = Vector3.Lerp(dashVelocity, new Vector3(0, playerVelocity.y, 0), dashDeceleration * Time.deltaTime);
             playerController.Move(dashVelocity * Time.deltaTime); // applies dash-specific velocity while dodging
         }
         else
@@ -64,6 +73,10 @@ public class PlayerSharedMovement : MonoBehaviour
     }
     private void ApplyGravity()
     {
+        if (isDashing)
+        {
+            return;
+        }
         // Grounded Check
         if (IsGrounded())
         {
@@ -75,9 +88,24 @@ public class PlayerSharedMovement : MonoBehaviour
     }
     private void CheckFalling()
     {
-        if (StateMachine.currentState != StateMachine.playerFallState && StateMachine.currentState != StateMachine.playerDashState)
+        if (StateMachine.currentState == StateMachine.playerFallState)
         {
-            if (!IsGrounded())
+            return;
+        }
+        if (StateMachine.currentState == StateMachine.playerDashState)
+        {
+            isJumping = true;
+            return;
+        }
+        if (!IsGrounded())
+        {
+            if (!isJumping)
+            {
+                StartCoroutine(CoyoteTimer());
+                //isJumping = true;
+            }
+
+            if (!inCoyoteTime)
             {
                 StateMachine.ChangeState(StateMachine.playerFallState);
             }
@@ -88,6 +116,7 @@ public class PlayerSharedMovement : MonoBehaviour
         //Checks if character is grounded or stepping on a stair ledge to return grounded value
         if (playerController.isGrounded || IsOnStairStep())
         {
+            isJumping = false;
             return true;
         }
         return false;
@@ -107,7 +136,23 @@ public class PlayerSharedMovement : MonoBehaviour
         return false;
     }
 
+    private void CheckStateChange()
+    {
 
+        PlayerBaseState currentState = StateMachine.currentState;
+        if (currentState == StateMachine.playerFallState || currentState == StateMachine.playerRangedState)
+        {
+            return;
+        }
+
+        /*
+        // Attack and parry override all states 
+        if (PlayerInput.attack.triggered || PlayerInput.parry.triggered)
+        {
+            StateMachine.ChangeState(StateMachine.playerRangedState);
+        }
+        */
+    }
 
     public void SetCurrentMovement(float newMaxSpeed, float newAcceleration)
     {
@@ -115,11 +160,20 @@ public class PlayerSharedMovement : MonoBehaviour
         maxSpeed = newMaxSpeed;
         accelerationRate = newAcceleration;
     }
-    
-   
-    public IEnumerator PerformDash()
+
+    private IEnumerator CoyoteTimer()
     {
-        yield break;
+        inCoyoteTime = true;
+        yield return new WaitForSeconds(coyoteTime);
+        inCoyoteTime = false;
+    }
+    public IEnumerator PerformDash(Vector2 direction, float dashTime)
+    {
+        isDashing = true;
+        dashVelocity = Quaternion.Euler(0, playerController.transform.eulerAngles.y, 0) *
+            new Vector3(direction.x, playerVelocity.y, direction.y); // alligns direction with player facing direction
+        yield return new WaitForSeconds(dashTime);
+        isDashing = false;
     }
    
 }

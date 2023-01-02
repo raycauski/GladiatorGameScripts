@@ -11,30 +11,29 @@ public class PlayerInputManager : MonoBehaviour
 
     // Actions
     // Movement
-    private InputAction movement;
-    private InputAction look;
-    private InputAction dash;
-    private InputAction jump;
-    private InputAction sprint;
-    private InputAction crouch;
+    public InputAction movement;
+    public InputAction look;
+    public InputAction dash;
+    public InputAction sprint;
+    public InputAction crouch;
 
     // Melee
-    private InputAction attack;
-    private InputAction attackHeavy;
-    private InputAction attackSpecial;
-    private InputAction parry;
-    private InputAction block;
+    public InputAction attack;
+    public InputAction attackHeavy;
+    public InputAction attackSpecial;
+    public InputAction parry;
+    public InputAction block;
 
     // Gun
-    private InputAction swap;
-    private InputAction reload;
-    private InputAction aim;
-    private InputAction fire;
-    
+    public InputAction swap;
+    public InputAction reload;
+    public InputAction aim;
+    public InputAction fire;
+
     // Menu
-    private InputAction interact;
-    private InputAction pause;
-    private InputAction inventory;
+    public InputAction interact;
+    public InputAction pause;
+    public InputAction inventory;
 
     public Vector2 movementInput { get; private set; } = Vector2.zero;
     public Vector2 lookInput { get; private set; } = Vector2.zero;
@@ -42,26 +41,6 @@ public class PlayerInputManager : MonoBehaviour
     public bool isCrouching = false;
     public bool isSprinting = false;
     public bool isBlocking = false;
-
-    // Events
-    public delegate void OnDashPress();
-    public static OnDashPress dashEvent;
-
-    public delegate void OnJump();
-    public static OnJump jumpEvent;
-
-    public delegate void OnAttack();
-    public static OnAttack attackEvent;
-
-    public delegate void OnAttackHeavy();
-    public static OnAttackHeavy attackHeavyEvent;
-
-    public delegate void OnAttackSpecial();
-    public static OnAttackSpecial attackSpecialEvent;
-
-    public delegate void OnParry();
-    public static OnParry parryEvent;
-
 
     private void Awake()
     {
@@ -74,7 +53,6 @@ public class PlayerInputManager : MonoBehaviour
         movement =      inputActions.PlayerControls.Movement;
         look =          inputActions.PlayerControls.Look;
         dash =          inputActions.PlayerControls.Dodge;
-        jump =          inputActions.PlayerControls.Jump;
         sprint =        inputActions.PlayerControls.Sprint;
         crouch =        inputActions.PlayerControls.Crouch;
         attack =        inputActions.PlayerControls.Attack;
@@ -104,8 +82,6 @@ public class PlayerInputManager : MonoBehaviour
         dash.performed += SetDash;
         dash.performed += ResetCrouch;
         dash.performed += ResetSprint;
-
-        jump.performed += SetJump;
 
         sprint.performed += ToggleSprint;
         sprint.canceled += ResetSprint;
@@ -149,8 +125,6 @@ public class PlayerInputManager : MonoBehaviour
         dash.performed -= SetDash;
         dash.performed -= ResetCrouch;
         dash.performed -= ResetSprint;
-
-        jump.performed -= SetJump;
 
         sprint.performed -= ToggleSprint;
         sprint.canceled -= ResetSprint;
@@ -201,17 +175,12 @@ public class PlayerInputManager : MonoBehaviour
     private void SetDash(InputAction.CallbackContext context)
     {
         //Debug.Log("Dashing");
+        /*
         if (dashEvent != null)
         {
             dashEvent();
         }
-        
-    }
-
-    // JUMP      ---------------------------------------------------------------
-    private void SetJump(InputAction.CallbackContext context)
-    {
-        //Debug.Log("JUMP");
+        */
     }
 
     // SPRINT    ---------------------------------------------------------------
@@ -239,42 +208,56 @@ public class PlayerInputManager : MonoBehaviour
     private void SetAttack(InputAction.CallbackContext context)
     {
         //Debug.Log("Attack");
+        /*
         if (attackEvent != null)
         {
             attackEvent();
         }
+        */
     }
 
     // HEAVY     ---------------------------------------------------------------
     private void SetAttackHeavy(InputAction.CallbackContext context)
     {
         //Debug.Log("Heavy Attack");
+        /*
         if (attackHeavyEvent != null)
         {
             attackHeavyEvent();
         }
+        */
     }
 
     // SPECIAL   ---------------------------------------------------------------
     private void SetAttackSpecial(InputAction.CallbackContext context)
     {
         // Debug.Log("Special Attack");
+        /*
         if (attackSpecialEvent != null)
         {
             attackSpecialEvent();
         }
+        */
     }
 
     // PARRY     ---------------------------------------------------------------
     private void SetParry(InputAction.CallbackContext context)
     {
         //Debug.Log("Parry");
+        /*
         if (parryEvent != null)
         {
             parryEvent();
         }
+        */
     }
 
+    public void ResetStates()
+    {
+        isBlocking = false;
+        isSprinting = false;
+        isCrouching = false;
+    }
     // BLOCK     ---------------------------------------------------------------
     private void SetBlock(InputAction.CallbackContext context)
     {
