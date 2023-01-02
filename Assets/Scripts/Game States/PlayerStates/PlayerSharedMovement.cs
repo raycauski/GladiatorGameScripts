@@ -25,9 +25,10 @@ public class PlayerSharedMovement : MonoBehaviour
     [SerializeField] private float dashDeceleration = 6f;
     public Vector3 dashVelocity { get; private set; } = Vector3.zero;
 
-    private bool isJumping = false;
-    public bool inCoyoteTime = false;
-    private const float COYOTE_TIME = 0.15f;
+    [SerializeField] private float jumpSpeed = 3.5f;
+    private bool canJump = false;
+    private bool inCoyoteTime = false;
+    private const float COYOTE_TIME = 0.25f;
 
 
     private void Start()
@@ -41,9 +42,10 @@ public class PlayerSharedMovement : MonoBehaviour
     public void LogicUpdate()
     {
         CheckFalling();
-        ApplyGravity();
         HandleMovement();
+        ApplyGravity();
         CheckStateChange();
+
     }
 
     private void HandleMovement()
@@ -95,23 +97,20 @@ public class PlayerSharedMovement : MonoBehaviour
     }
     private void CheckFalling()
     {
-        if (StateMachine.CurrentState == StateMachine.PlayerFallState)
+        // If already falling break
+        if (StateMachine.CurrentState == StateMachine.PlayerFallState || (StateMachine.CurrentState == StateMachine.PlayerDashState))
         {
             return;
         }
-        if (StateMachine.CurrentState == StateMachine.PlayerDashState)
-        {
-            isJumping = true;
-            return;
-        }
+
+
         if (!IsGrounded())
         {
-            if (!isJumping)
+            if (canJump)
             {
                 StartCoroutine(CoyoteTimer());
-                //isJumping = true;
+                
             }
-
             if (!inCoyoteTime)
             {
                 StateMachine.ChangeState(StateMachine.PlayerFallState);
@@ -123,7 +122,7 @@ public class PlayerSharedMovement : MonoBehaviour
         //Checks if character is grounded or stepping on a stair ledge to return grounded value
         if (playerController.isGrounded || IsOnStairStep())
         {
-            isJumping = false;
+            canJump = true;
             return true;
         }
         return false;
@@ -168,10 +167,21 @@ public class PlayerSharedMovement : MonoBehaviour
         accelerationRate = newAcceleration;
     }
 
+    public void Jump()
+    {
+        if (!canJump)
+        {
+            return;
+        }
+        canJump = false;
+        playerVelocity.y += jumpSpeed;
+    }
+
     private IEnumerator CoyoteTimer()
     {
         inCoyoteTime = true;
         yield return new WaitForSeconds(COYOTE_TIME);
+        canJump = false;
         inCoyoteTime = false;
     }
     public IEnumerator PerformDash(Vector2 direction, float dashTime)

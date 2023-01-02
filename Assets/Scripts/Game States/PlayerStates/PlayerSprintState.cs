@@ -6,7 +6,7 @@ public class PlayerSprintState : PlayerBaseState
 { 
     private float sprintSpeed = 8f;
     private float sprintAccelerationRate = 5f;
-    private float jumpSpeed = 3.5f;
+
    
     public override void EnterState()
     {
@@ -41,7 +41,8 @@ public class PlayerSprintState : PlayerBaseState
         else if (PlayerInput.dash.triggered)
         {
             // Jump
-            PlayerMovement.playerVelocity.y += jumpSpeed;
+            //PlayerMovement.playerVelocity.y += jumpSpeed;
+            PlayerMovement.Jump();
             StateMachine.ChangeState(StateMachine.PlayerDashState);
         }
 

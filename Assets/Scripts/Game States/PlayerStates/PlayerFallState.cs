@@ -13,6 +13,7 @@ public class PlayerFallState : PlayerBaseState
     public override void EnterState()
     {
         //playerStateMachine.SetCurrentMovement(fallingSpeed, fallingAcceleration);
+        //PlayerMovement.playerHands.SetFallAnimation(true);
     }
     public override void LogicUpdate()
     {
@@ -24,7 +25,7 @@ public class PlayerFallState : PlayerBaseState
     }
     public override void ExitState()
     {
-
+        //PlayerMovement.playerHands.SetFallAnimation(false);
     }
 
     // TODO: Add falling attack transition

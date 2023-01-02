@@ -127,6 +127,10 @@ public class PlayerHandsController : MonoBehaviour
         handAnimator.SetBool("isSprinting", mode);
     }
  
+    public void SetFallAnimation(bool mode)
+    {
+        handAnimator.SetBool("isFalling", mode);
+    }
 
     public void PlayParryAnimation()
     {
