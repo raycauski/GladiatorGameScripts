@@ -11,13 +11,13 @@ public class PlayerRangedState : PlayerBaseState
     private float maxSpeedAiming;
     private float aimSpeedMultiplier;
 
-
-    
     public override void EnterState()
     {
         maxSpeedAiming = maxSpeed * aimSpeedMultiplier;
         PlayerMovement.SetCurrentMovement(maxSpeed, accelerationRate);
     }
+   
+
     public override void LogicUpdate()
     {
         CheckStateChange();
@@ -54,20 +54,20 @@ public class PlayerRangedState : PlayerBaseState
     {
         if (PlayerInput.isCrouching)
         {
-            StateMachine.ChangeState(StateMachine.playerCrouchState);
+            StateMachine.ChangeState(StateMachine.PlayerCrouchState);
         }
         else if (PlayerInput.sprint.IsPressed())
         {
             if (PlayerInput.movementInput != Vector2.zero)
             {
-                StateMachine.ChangeState(StateMachine.playerSprintState);
+                StateMachine.ChangeState(StateMachine.PlayerSprintState);
             }
         }
     }
 
     public void Dash(InputAction.CallbackContext context) 
     {
-            StateMachine.ChangeState(StateMachine.playerDashState);
+            StateMachine.ChangeState(StateMachine.PlayerDashState);
     }
 
     public void Attack()

@@ -19,7 +19,7 @@ public class PlayerFallState : PlayerBaseState
         // Check when controller hits ground to leave falling state
         if (PlayerMovement.IsGrounded())
         {
-            StateMachine.ChangeState(StateMachine.playerRangedState);
+            StateMachine.ChangeState(StateMachine.PlayerRangedState);
         }
     }
     public override void ExitState()

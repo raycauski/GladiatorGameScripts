@@ -29,9 +29,9 @@ public class DevDebuggerTool : MonoBehaviour
         if (currentGameState == GameStateMachine.Instance.playerGameplayState && playerStateMachine != null)
         {
             // Shows current player state in top right corner if available
-            GUI.Label(new Rect(680, 20, 400, 30), ("Player State:" + playerStateMachine.currentState).ToString());
-            GUI.Label(new Rect(680, 50, 400, 30), ("Speed:" + playerStateMachine.playerMovement.playerController.velocity).ToString());
-            GUI.Label(new Rect(680, 80, 400, 30), ("DashVelocity " + playerStateMachine.playerMovement.dashVelocity).ToString());
+            GUI.Label(new Rect(680, 20, 400, 30), ("Player State:" + playerStateMachine.CurrentState).ToString());
+            GUI.Label(new Rect(680, 50, 400, 30), ("Speed:" + playerStateMachine.PlayerMovement.playerController.velocity).ToString());
+            //GUI.Label(new Rect(680, 80, 400, 30), ("DashVelocity " + playerStateMachine.playerMovement.dashVelocity).ToString());
         }
         
     }

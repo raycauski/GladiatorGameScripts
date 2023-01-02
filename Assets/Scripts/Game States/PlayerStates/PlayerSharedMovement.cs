@@ -1,21 +1,20 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class PlayerSharedMovement : MonoBehaviour
 {
-    public PlayerStateMachine StateMachine { get; private set; }
-    public CharacterController playerController { get; private set; }
+    public PlayerStateMachine StateMachine;
+    public CharacterController playerController;
     public PlayerInputManager PlayerInput { get; private set; }
-    public PlayerHandsController playerHands { get; private set; }
+    public PlayerHandsController playerHands;
 
     public GameObject playerCameraHolder;
 
     public Vector3 playerVelocity = Vector3.zero;
 
     public float gravity = 12f;
-    private float terminalVelocity = -60;
+    private readonly float terminalVelocity = -60;
 
     private float velX = 0;
     private float velZ = 0;
@@ -28,17 +27,17 @@ public class PlayerSharedMovement : MonoBehaviour
 
     private bool isJumping = false;
     public bool inCoyoteTime = false;
-    private float coyoteTime = 0.15f;
+    private const float COYOTE_TIME = 0.15f;
 
 
     private void Start()
     {
         StateMachine = GetComponent<PlayerStateMachine>();
         playerController = GetComponent<CharacterController>();
-        PlayerInput = StateMachine.playerInput;
+        PlayerInput = StateMachine.PlayerInput;
         playerHands = GetComponent<PlayerHandsController>();
-    }
 
+    }
     public void LogicUpdate()
     {
         CheckFalling();
@@ -50,6 +49,10 @@ public class PlayerSharedMovement : MonoBehaviour
     private void HandleMovement()
     {
         // Input Vectors
+        if (PlayerInput == null)
+        {
+            return;
+        }
         Vector2 movementInput = (PlayerInput.movementInput).normalized;
 
 
@@ -63,7 +66,10 @@ public class PlayerSharedMovement : MonoBehaviour
         // Apply Standard Movement per frame
         if (isDashing)
         {
-            dashVelocity = Vector3.Lerp(dashVelocity, new Vector3(0, playerVelocity.y, 0), dashDeceleration * Time.deltaTime);
+            if (playerVelocity.y < 0)
+            {
+                dashVelocity = Vector3.Lerp(dashVelocity, new Vector3(0, playerVelocity.y, 0), dashDeceleration * Time.deltaTime);
+            }
             playerController.Move(dashVelocity * Time.deltaTime); // applies dash-specific velocity while dodging
         }
         else
@@ -80,19 +86,20 @@ public class PlayerSharedMovement : MonoBehaviour
         // Grounded Check
         if (IsGrounded())
         {
-            playerVelocity.y = 25 * -gravity * Time.deltaTime;
+            //playerVelocity.y = 25 * -gravity * Time.deltaTime;
+            playerVelocity.y = -gravity * Time.deltaTime;
         }
         //Apply Gravity
         playerVelocity.y -= gravity * Time.deltaTime;
-        playerVelocity.y = Mathf.Clamp(playerVelocity.y, terminalVelocity, 0);
+        playerVelocity.y = Mathf.Clamp(playerVelocity.y, terminalVelocity, 25f);
     }
     private void CheckFalling()
     {
-        if (StateMachine.currentState == StateMachine.playerFallState)
+        if (StateMachine.CurrentState == StateMachine.PlayerFallState)
         {
             return;
         }
-        if (StateMachine.currentState == StateMachine.playerDashState)
+        if (StateMachine.CurrentState == StateMachine.PlayerDashState)
         {
             isJumping = true;
             return;
@@ -107,7 +114,7 @@ public class PlayerSharedMovement : MonoBehaviour
 
             if (!inCoyoteTime)
             {
-                StateMachine.ChangeState(StateMachine.playerFallState);
+                StateMachine.ChangeState(StateMachine.PlayerFallState);
             }
         }
     }
@@ -139,8 +146,8 @@ public class PlayerSharedMovement : MonoBehaviour
     private void CheckStateChange()
     {
 
-        PlayerBaseState currentState = StateMachine.currentState;
-        if (currentState == StateMachine.playerFallState || currentState == StateMachine.playerRangedState)
+        PlayerBaseState currentState = StateMachine.CurrentState;
+        if (currentState == StateMachine.PlayerFallState || currentState == StateMachine.PlayerRangedState)
         {
             return;
         }
@@ -164,7 +171,7 @@ public class PlayerSharedMovement : MonoBehaviour
     private IEnumerator CoyoteTimer()
     {
         inCoyoteTime = true;
-        yield return new WaitForSeconds(coyoteTime);
+        yield return new WaitForSeconds(COYOTE_TIME);
         inCoyoteTime = false;
     }
     public IEnumerator PerformDash(Vector2 direction, float dashTime)

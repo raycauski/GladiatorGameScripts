@@ -28,7 +28,7 @@ public class PlayerHandsController : MonoBehaviour
     void Start()
     {
         playerStateMachine = GetComponent<PlayerStateMachine>();
-        playerInput = playerStateMachine.playerInput;
+        playerInput = playerStateMachine.PlayerInput;
         currentDirection = 0;
     }
 

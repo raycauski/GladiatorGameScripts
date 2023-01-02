@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerSprintState : PlayerBaseState
-{
-
+{ 
     private float sprintSpeed = 8f;
     private float sprintAccelerationRate = 5f;
-    private float jumpSpeed = 6.5f;
+    private float jumpSpeed = 3.5f;
+   
     public override void EnterState()
     {
         EnableSprint();
@@ -34,7 +34,7 @@ public class PlayerSprintState : PlayerBaseState
         // Not sprinting Sprinting
         if (!PlayerInput.sprint.IsPressed() || PlayerInput.movementInput == Vector2.zero)
         {
-            StateMachine.ChangeState(StateMachine.playerRangedState);
+            StateMachine.ChangeState(StateMachine.PlayerRangedState);
         }
 
         // Dash during sprint = Jump
@@ -42,14 +42,14 @@ public class PlayerSprintState : PlayerBaseState
         {
             // Jump
             PlayerMovement.playerVelocity.y += jumpSpeed;
-            StateMachine.ChangeState(StateMachine.playerDashState);
+            StateMachine.ChangeState(StateMachine.PlayerDashState);
         }
 
         // Attack during sprint = running attack
         else if (PlayerInput.attack.triggered)
         {
-            StateMachine.ChangeState(StateMachine.playerRangedState);
-            StateMachine.playerRangedState.GetComponent<PlayerRangedState>().Attack();
+            StateMachine.ChangeState(StateMachine.PlayerRangedState);
+            StateMachine.PlayerRangedState.GetComponent<PlayerRangedState>().Attack();
         }
     }
 

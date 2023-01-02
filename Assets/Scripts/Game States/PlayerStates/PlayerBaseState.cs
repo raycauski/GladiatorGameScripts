@@ -11,8 +11,8 @@ public abstract class PlayerBaseState: MonoBehaviour
     private void Awake()
     {
         StateMachine = GetComponent<PlayerStateMachine>();
-        PlayerInput = StateMachine.playerInput;
-        PlayerMovement = StateMachine.playerMovement;
+        PlayerInput = StateMachine.PlayerInput;
+        PlayerMovement = StateMachine.PlayerMovement;
 
         //Debug.Log(StateMachine + " " + PlayerInput + " " + PlayerMovement);
     }

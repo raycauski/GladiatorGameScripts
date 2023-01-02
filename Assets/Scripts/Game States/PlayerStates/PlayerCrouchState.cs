@@ -38,7 +38,7 @@ public class PlayerCrouchState : PlayerBaseState
     {
         if (!PlayerInput.isCrouching)
         {
-            StateMachine.ChangeState(StateMachine.playerRangedState);
+            StateMachine.ChangeState(StateMachine.PlayerRangedState);
         }
     }
 }
