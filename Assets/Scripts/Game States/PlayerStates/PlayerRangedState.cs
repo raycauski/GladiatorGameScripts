@@ -5,11 +5,6 @@ using UnityEngine;
 // Player state for ranged gameplay, where character can  move and aim.
 public class PlayerRangedState : PlayerBaseState
 {
-    private PlayerInputManager playerInput;
-    private GameObject playerCameraHolder;
-
-    private PlayerStateMachine stateMachine;
-
     private float maxSpeed = 4.5f;
     private float accelerationRate = 6.2f; // 10f
     private float maxSpeedAiming;
@@ -17,24 +12,15 @@ public class PlayerRangedState : PlayerBaseState
 
 
     
-    public override void EnterState(PlayerStateMachine playerStateMachine)
+    public override void EnterState()
     {
-        stateMachine = playerStateMachine;
-        playerInput = playerStateMachine.playerInput;
-        playerCameraHolder = playerStateMachine.playerCameraHolder;
-
         maxSpeedAiming = maxSpeed * aimSpeedMultiplier;
-
-        playerStateMachine.SetCurrentMovement(maxSpeed, accelerationRate);
+        PlayerMovement.SetCurrentMovement(maxSpeed, accelerationRate);
     }
     public override void LogicUpdate()
     {
         CheckStateChange();
-
-       
-        
-        stateMachine.playerHands.SetBlockAnimation(playerInput.isBlocking);
-        
+        PlayerMovement.playerHands.SetBlockAnimation(PlayerInput.isBlocking);
 
     }
     public override void ExitState()
@@ -59,33 +45,34 @@ public class PlayerRangedState : PlayerBaseState
 
     private void CheckStateChange()
     {
-        if (playerInput.isCrouching)
+        if (PlayerInput.isCrouching)
         {
-            stateMachine.ChangeState(stateMachine.playerCrouchState);
+            StateMachine.ChangeState(StateMachine.playerCrouchState);
         }
-        else if (playerInput.isSprinting)
+        else if (PlayerInput.isSprinting)
         {
-            if (playerInput.movementInput != Vector2.zero)
+            if (PlayerInput.movementInput != Vector2.zero)
             {
-                stateMachine.ChangeState(stateMachine.playerSprintState);
+                StateMachine.ChangeState(StateMachine.playerSprintState);
             }
         }
     }
 
-
     public void Dash()
     {
-            stateMachine.ChangeState(stateMachine.playerDashState);
+            StateMachine.ChangeState(StateMachine.playerDashState);
     }
 
     public void Attack()
     {
-        stateMachine.playerHands.PlayAttackAnim();
+        // TODO: Change to wepon
+        PlayerMovement.playerHands.PlayAttackAnim();
     }
 
     public void Parry()
     {
-        stateMachine.playerHands.PlayParryAnimation();
+        // TODO change to weapon
+        PlayerMovement.playerHands.PlayParryAnimation();
 
     }
 

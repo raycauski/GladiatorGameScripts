@@ -4,23 +4,16 @@ using UnityEngine;
 
 public class PlayerDashState : PlayerBaseState
 {
-    private PlayerStateMachine stateMachine;
-    private PlayerInputManager playerInput;
-    private CharacterController playerController;
 
-    private float dashSpeed = 12f;
-    private float dashDeceleration = 6f;
-    private float dashTime = 0.5f;
+    [SerializeField] private float dashSpeed = 50f;
+    [SerializeField] private float dashDeceleration = 1f;
+    [SerializeField] private float dashTime = 0.5f;
 
 
     private Vector2 dashDirection;
     public Vector3 dashVelocity { get; private set; } = Vector3.zero;
-    public override void EnterState(PlayerStateMachine playerStateMachine)
+    public override void EnterState()
     {
-        stateMachine = playerStateMachine;
-        playerInput = stateMachine.playerInput;
-        playerController = stateMachine.playerController;
-  
         CalculateDashTrajectory();
     }
     public override void LogicUpdate()
@@ -34,34 +27,37 @@ public class PlayerDashState : PlayerBaseState
 
     private void CalculateDashTrajectory()
     {
-        if (playerInput.movementInput == Vector2.zero)
+        if (PlayerInput.movementInput == Vector2.zero)
         {
             dashDirection = Vector2.down * dashSpeed; // if not pressing direction keys, automatically dodge backwards
         }
         else
         {
-            dashDirection = playerInput.movementInput.normalized * dashSpeed; // otherwise dodge into movement input direction
+            dashDirection = PlayerInput.movementInput.normalized * dashSpeed; // otherwise dodge into movement input direction
         }
+
+
+        /*
         dashVelocity = Quaternion.Euler(0, playerController.transform.eulerAngles.y, 0) *
             new Vector3(dashDirection.x, stateMachine.playerVelocity.y, dashDirection.y); // alligns direction with player facing direction
-        
+        */
         StartCoroutine(DashTimer());    // Starts Dash coroutine
     }
 
     private IEnumerator DashTimer()
     {
         yield return new WaitForSeconds(dashTime);
-        stateMachine.ChangeState(stateMachine.playerRangedState);
+        StateMachine.ChangeState(StateMachine.playerRangedState);
     }
 
     public void SetDashVelocity(Vector3 newVelocity)
     {
-       stateMachine.SetCurrentMovement(0, 0);
+       //PlayerMovement.SetCurrentMovement(0, 0);
     }
     private void DashMovement()
     {
         // Creates a smooth dash that starts fast and slows to 0.
-        dashVelocity = Vector3.Lerp(dashVelocity, new Vector3(0, stateMachine.playerVelocity.y, 0), dashDeceleration * Time.deltaTime);
+        dashVelocity = Vector3.Lerp(dashVelocity, new Vector3(0, PlayerMovement.playerVelocity.y, 0), dashDeceleration * Time.deltaTime);
         SetDashVelocity(dashVelocity);
     }
 }

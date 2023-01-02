@@ -5,23 +5,21 @@ using UnityEngine;
 public class PlayerFallState : PlayerBaseState
 {
     //private float fallingSpeed = 2.6f;
-    // private float fallingAcceleration = 3f;
-    private PlayerStateMachine stateMachine;
+    //private float fallingAcceleration = 3f;
 
     public float maxSpeed = 4.5f;
     public float accelerationRate = 5f;
 
-    public override void EnterState(PlayerStateMachine playerStateMachine)
+    public override void EnterState()
     {
-        stateMachine = playerStateMachine;
         //playerStateMachine.SetCurrentMovement(fallingSpeed, fallingAcceleration);
     }
     public override void LogicUpdate()
     {
         // Check when controller hits ground to leave falling state
-        if (stateMachine.IsGrounded())
+        if (PlayerMovement.IsGrounded())
         {
-            stateMachine.ChangeState(stateMachine.playerRangedState);
+            StateMachine.ChangeState(StateMachine.playerRangedState);
         }
     }
     public override void ExitState()

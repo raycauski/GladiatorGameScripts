@@ -35,8 +35,6 @@ public abstract class Firearm : MonoBehaviour
     protected float weaponWeight;
 
 
-
-
     protected float aimTime;
     /// constants
     protected float fireDelay;

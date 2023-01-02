@@ -30,8 +30,8 @@ public class DevDebuggerTool : MonoBehaviour
         {
             // Shows current player state in top right corner if available
             GUI.Label(new Rect(680, 20, 400, 30), ("Player State:" + playerStateMachine.currentState).ToString());
-            GUI.Label(new Rect(680, 50, 400, 30), ("Speed:" + playerStateMachine.playerController.velocity).ToString());
-            GUI.Label(new Rect(680, 80, 400, 30), ("DashVelocity " + playerStateMachine.dashVelocity).ToString());
+            GUI.Label(new Rect(680, 50, 400, 30), ("Speed:" + playerStateMachine.playerMovement.playerController.velocity).ToString());
+            GUI.Label(new Rect(680, 80, 400, 30), ("DashVelocity " + playerStateMachine.playerMovement.dashVelocity).ToString());
         }
         
     }

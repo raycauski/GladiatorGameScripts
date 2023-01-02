@@ -4,19 +4,14 @@ using UnityEngine;
 
 public class PlayerCrouchState : PlayerBaseState
 {
-    private PlayerStateMachine stateMachine;
-    private PlayerInputManager playerInput;
     private GameObject playerCameraHolder;
     private FPSCamera camFPS;
     private float maxSpeedCrouch = 2.5f;
     private float accelerationCrouch = 15f;
 
-
-    public override void EnterState(PlayerStateMachine playerStateMachine)
+    public override void EnterState()
     {
-        stateMachine = playerStateMachine;
-        playerInput = stateMachine.playerInput;
-        playerCameraHolder = playerStateMachine.playerCameraHolder;
+        playerCameraHolder = PlayerMovement.playerCameraHolder;
         camFPS = playerCameraHolder.GetComponent<FPSCamera>();
  
         EnableCrouch();
@@ -27,23 +22,23 @@ public class PlayerCrouchState : PlayerBaseState
     }
     public override void ExitState()
     {
-        playerInput.isCrouching = false;
+        PlayerInput.isCrouching = false;
         camFPS.SetCrouching(false);
-        stateMachine.playerHands.SetCrouchAnimation(false); // Anim
+        PlayerMovement.playerHands.SetCrouchAnimation(false); // Anim
     }
 
     private void EnableCrouch()
     {
 
-        stateMachine.SetCurrentMovement(maxSpeedCrouch, accelerationCrouch);
+        PlayerMovement.SetCurrentMovement(maxSpeedCrouch, accelerationCrouch);
         camFPS.SetCrouching(true);
-        stateMachine.playerHands.SetCrouchAnimation(true); // Anim
+        PlayerMovement.playerHands.SetCrouchAnimation(true); // Anim
     }
     private void CheckDisableCrouch()
     {
-        if (!playerInput.isCrouching)
+        if (!PlayerInput.isCrouching)
         {
-            stateMachine.ChangeState(stateMachine.playerRangedState);
+            StateMachine.ChangeState(StateMachine.playerRangedState);
         }
     }
 }

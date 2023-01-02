@@ -4,15 +4,11 @@ using UnityEngine;
 
 public class PlayerSprintState : PlayerBaseState
 {
-    private PlayerStateMachine stateMachine;
-    private PlayerInputManager playerInput;
 
     private float sprintSpeed = 8f;
     private float sprintAccelerationRate = 5f;
-    public override void EnterState(PlayerStateMachine playerStateMachine)
+    public override void EnterState()
     {
-        stateMachine = playerStateMachine;
-        playerInput = stateMachine.playerInput;
         EnableSprint();
     }
     public override void LogicUpdate()
@@ -21,20 +17,20 @@ public class PlayerSprintState : PlayerBaseState
     }
     public override void ExitState()
     {
-        stateMachine.playerHands.SetSprintAnimation(false); // Anim
+        PlayerMovement.playerHands.SetSprintAnimation(false); // Anim
     }
 
     private void EnableSprint()
     {
-        stateMachine.SetCurrentMovement(sprintSpeed, sprintAccelerationRate);
-        stateMachine.playerHands.SetSprintAnimation(true); // Anim
+        PlayerMovement.SetCurrentMovement(sprintSpeed, sprintAccelerationRate);
+        PlayerMovement.playerHands.SetSprintAnimation(true); // Anim
     }
 
     private void CheckDisableSprint()
     {
-        if (!playerInput.isSprinting || playerInput.movementInput == Vector2.zero)
+        if (!PlayerInput.isSprinting || PlayerInput.movementInput == Vector2.zero)
         {
-            stateMachine.ChangeState(stateMachine.playerRangedState);
+            StateMachine.ChangeState(StateMachine.playerRangedState);
         }
     }
 
