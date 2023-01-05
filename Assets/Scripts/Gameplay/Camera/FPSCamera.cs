@@ -53,7 +53,7 @@ public class FPSCamera : MonoBehaviour
     }
     void Start()
     {
-        playerInput = GameStateMachine.Instance.playerInputManager;
+        playerInput = GameStateMachine.Instance.PlayerInputManager;
         holderTransform = this.transform;
 
         // Applies invert aim

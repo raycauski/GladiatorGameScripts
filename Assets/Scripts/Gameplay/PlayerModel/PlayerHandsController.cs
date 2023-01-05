@@ -6,11 +6,14 @@ public class PlayerHandsController : MonoBehaviour
 {
     [SerializeField] private Transform handHolder;
     [SerializeField] private Animator handAnimator;
+    [SerializeField] private PlayerInventory playerInventory;
     [SerializeField] private ParticleSystem swordParticles;
+    public Transform handBone;
 
     private PlayerStateMachine playerStateMachine;
     private PlayerInputManager playerInput;
-    private CharacterController playerController;
+   
+
 
     private Vector2 attackDirection = Vector2.up;
     private Direction currentDirection;
@@ -84,6 +87,10 @@ public class PlayerHandsController : MonoBehaviour
 
     }
 
+    public void SwapWeapons()
+    {
+        playerInventory.SwapHeldWeapon();
+    }
     public void PlayAttackAnim()
     {
         StartCoroutine(SwordTrails());

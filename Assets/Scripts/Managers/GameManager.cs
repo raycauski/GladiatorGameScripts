@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
 
 public class GameManager : MonoBehaviour
 {
@@ -29,21 +30,25 @@ public class GameManager : MonoBehaviour
     }
     #endregion
     [SerializeField] private GameObject playerObject;
-    [SerializeField] private GameObject player;
-    [SerializeField] private Transform spawnPoint;
+    [SerializeField] private GameObject pauseMenuObject;
+    //[SerializeField] private GameObject playerInventoryObject;
+    public GameObject PauseMenu { get; private set; }
+    public GameObject Player { get; private set; }
+    private Transform spawnPoint;
+    public PlayerInventory PlayerInventory { get; private set; }
 
-    private GameObject pauseMenuObject;
-    private GameObject pauseMenu;
+    
+    
     private void Start()
     {
-        LoadPlayer();
-        LoadPauseMenu();
         if (!SceneLoader.Instance.InMainMenu())
         {
             FindSpawnPoint();
             SpawnPauseMenu();
             SpawnPlayer();
         }
+        //PlayerInventory = playerInventoryObject.GetComponent<PlayerInventory>();
+        PlayerInventory = GetComponent<PlayerInventory>();
     }
     private void OnEnable()
     {
@@ -57,24 +62,20 @@ public class GameManager : MonoBehaviour
         EventManager.OnChangedScenes -= SpawnPlayer;
         EventManager.OnChangedScenes -= SpawnPauseMenu;
     }
-    private void LoadPlayer()
-    {
-        playerObject = Resources.Load<GameObject>("PlayerFPS");
-    }
+
+
+
     private void SpawnPlayer()
     {
         // null check if reference exists in scene first
-        player = Instantiate(playerObject, spawnPoint.transform.position, spawnPoint.rotation).transform.GetChild(0).gameObject; // finds player object which spawned in
+        Player = Instantiate(playerObject, spawnPoint.transform.position, spawnPoint.rotation).transform.GetChild(0).gameObject; // finds player object which spawned in
         GameStateMachine.Instance.ChangeState(GameStateMachine.Instance.playerGameplayState);
     }
-    private void LoadPauseMenu()
-    {
-        pauseMenuObject = Resources.Load<GameObject>("PauseMenu");
-    }
+   
     private void SpawnPauseMenu()
     {
         // null check if reference exists in scene first
-        pauseMenu = Instantiate(pauseMenuObject, spawnPoint);
+        PauseMenu = Instantiate(pauseMenuObject, spawnPoint);
     }
     private void FindSpawnPoint()
     {
@@ -84,13 +85,4 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public GameObject GetPlayer()
-    {
-        return player;
-    }
-
-    public GameObject GetPauseMenu()
-    {
-        return pauseMenu;
-    }
 }

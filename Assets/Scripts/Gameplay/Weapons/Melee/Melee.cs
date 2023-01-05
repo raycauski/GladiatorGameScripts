@@ -15,14 +15,16 @@ public abstract class Melee : MonoBehaviour
     [SerializeField]
     protected int energy;
 
+    public PlayerHandsController playerHands;
+
     void Start()
     {
-        
+        playerHands = GameManager.Instance.Player.GetComponent<PlayerHandsController>();
     }
 
-    // Update is called once per frame
-    void Update()
+    public void Attack()
     {
-        
+
     }
+
 }

@@ -11,11 +11,11 @@ public class DevDebuggerTool : MonoBehaviour
     private void Start()
     {
         gameStateMachine = GameStateMachine.Instance;
-        if (!GameManager.Instance.GetPlayer())
+        if (!GameManager.Instance.Player)
         {
             return;
         }
-        playerStateMachine = GameManager.Instance.GetPlayer().GetComponent<PlayerStateMachine>();
+        playerStateMachine = GameManager.Instance.Player.GetComponent<PlayerStateMachine>();
     }
     private void OnGUI()
     {
