@@ -7,11 +7,13 @@ public abstract class Firearm : MonoBehaviour
     /// References
     private Camera playerCamera;
     private CharacterController playerController;
-    private float playerMaxSpeed = 8f; // Set as max sprint speed, change later to refernce
+    private const float playerMaxSpeed = 8f; // Set as max sprint speed, change later to refernce
     public LayerMask playerLayerMask;
+    private CameraHolder camHolder;
 
-    private Ray raycast;
+    //private Ray raycast;
     private RaycastHit raycastHit;
+    private FirearmFX firearmFX;
     private LineRenderer lineRenderer;
 
 
@@ -28,10 +30,11 @@ public abstract class Firearm : MonoBehaviour
     protected int currentAmmo;
     ///<value> Strength of vertical recoil in lb-fps</value>
     [SerializeField]
-    protected float verticalRecoil;
+    [Range(0f, 32f)]
+    protected float spread;
     ///<value> Strength of horizontal recoil in lb-fps </value>
     [SerializeField]
-    protected float horizontalRecoil;
+    protected float recoil = 4f;
     ///<value> Fire rate in rounds per minute </value>
     [SerializeField]
     protected float fireRateRPM;
@@ -51,8 +54,14 @@ public abstract class Firearm : MonoBehaviour
     protected float fireDelay;
 
 
-    private bool isWaiting = false;
+    private bool isReloading = false;
+    private bool isFiring = false;
+    private float prevPlayerSpeed;
 
+    private float horizontalBloom;
+
+    protected const float SPREAD_MULTIPLIER = 0.01f;
+    protected const float RECOIL_MULTIPLIER = 0.1f;
     protected const float AIM_DELAY_MULTIPLIER = 2f / 15f;
     protected const float MAX_RANGE = 250f;
     protected const float MIN_DEFAULT_SPREAD = 0.2f;
@@ -67,13 +76,16 @@ public abstract class Firearm : MonoBehaviour
     void Start()
     {
         fireDelay = CalculateFireDelaySeconds(fireRateRPM);
-        //Debug.Log("Fire delay = " + fireDelay + " seconds");
         aimTime = CalculateAimDelaySeconds(weaponWeight);
-        //Debug.Log("Aim delay seconds = " + aimTime + " seconds, using " + AIM_DELAY_MULTIPLIER + " seconds per pound");
+        recoil = CalculateRecoil(weaponWeight);
+
         GameObject player = GameManager.Instance.Player;
         playerCamera = GameObject.FindGameObjectWithTag("PlayerCamera").GetComponent<Camera>();
         playerController = player.GetComponent<PlayerSharedMovement>().playerController;
         //playerMaxSpeed = player.GetComponent<PlayerSharedMovement>().maxSpeed;
+        camHolder = player.GetComponent<PlayerSharedMovement>().playerCameraHolder.GetComponent<CameraHolder>();
+
+        firearmFX = GetComponent<FirearmFX>();
 
         // Testing
         lineRenderer = gameObject.GetComponent<LineRenderer>();
@@ -104,28 +116,33 @@ public abstract class Firearm : MonoBehaviour
 
     private IEnumerator ShootRound()
     {
-        Debug.Log("SHOOTING");
-        isWaiting = true;
+        isFiring = true;
         Vector3 bulletDirection = CalculateBulletDirection();
-        /// RecoilScript.ApplyRecoil(bulletDirection);
+
+        camHolder.ApplyRecoil(horizontalBloom, recoil);
+        firearmFX.PlayShotSound();
+        
+
         if (Physics.Raycast(playerCamera.transform.position, bulletDirection, out raycastHit, MAX_RANGE, playerLayerMask))
         {
             Debug.DrawLine(playerCamera.transform.position, raycastHit.point, Color.red, 5f);
             lineRenderer.enabled = true;
             lineRenderer.SetPosition(0, transform.position);
             lineRenderer.SetPosition(1, raycastHit.point);
-            Debug.Log("HIT OBJ: " + raycastHit.collider);
+
+            firearmFX.SpawnBulletHole(raycastHit.point, raycastHit.normal);
+            //Debug.Log("HIT OBJ: " + raycastHit.collider);
         }
         currentMag--;
         //Debug.Log("Mag: " + currentMag + " / " + capacity + " From total" + currentAmmo);
         yield return new WaitForSeconds(fireDelay);
-        isWaiting = false;
+        isFiring = false;
     }
 
     private bool CanShoot()
     {
         
-        if (currentMag < 1 || isWaiting)
+        if (currentMag < 1 || isReloading || isFiring)
         {
             return false;
         }
@@ -153,7 +170,7 @@ public abstract class Firearm : MonoBehaviour
     private IEnumerator WaitForReload()
     {
         Debug.Log("RELOADING");
-        isWaiting = true;
+        isReloading = true;
         // Play anim
         yield return new WaitForSeconds(reloadTimeSeconds);
         if (currentAmmo > capacity)
@@ -167,22 +184,25 @@ public abstract class Firearm : MonoBehaviour
             currentAmmo = 0;
         }
         currentMag = capacity;
-        isWaiting = false;
+        isReloading = false;
         Debug.Log("RELOADING DONE");
     }
 
     /// <summary>
-    /// /// Gets spread and returns direction of bullet
+    /// Gets spread and returns direction of bullet
     /// </summary>
     /// <returns></returns>
     private Vector3 CalculateBulletDirection()
     {
         /// Gets spread percent based on movement from min 20% to max 100%
-        float spreadPercent = Mathf.Clamp(CalculateSpreadFromMovement(), 0f, 0.8f) + MIN_DEFAULT_SPREAD;
-        float horizontalSpread = Random.Range(-horizontalRecoil, horizontalRecoil) * spreadPercent;
-        float verticalSpread = Random.Range(-verticalRecoil, verticalRecoil) * spreadPercent;
+        float curPlayerSpeed = CalculateSpreadFromMovement();
+
+        float spreadPercent = Mathf.Clamp(curPlayerSpeed, 0f, 0.8f) + MIN_DEFAULT_SPREAD;
     
-        return playerCamera.transform.forward + new Vector3(horizontalSpread, verticalSpread, 0f);
+        horizontalBloom = Random.Range(-spread, spread) * spreadPercent * SPREAD_MULTIPLIER;
+        float verticalBloom = Random.Range(-spread, spread) * spreadPercent * SPREAD_MULTIPLIER;
+    
+        return playerCamera.transform.forward + new Vector3(horizontalBloom, verticalBloom, 0f);
     }
     /// <summary>
     /// Calculates the player's movement speed percentage from max speed and returns percentage for spread multiplier.
@@ -212,7 +232,13 @@ public abstract class Firearm : MonoBehaviour
     /// <returns></returns>
     private float CalculateAimDelaySeconds(float weight)
     {
+        //Debug.Log("Aim delay seconds = " + aimTime + " seconds, using " + AIM_DELAY_MULTIPLIER + " seconds per pound");
         return (AIM_DELAY_MULTIPLIER * weight);
+    }
+
+    private float CalculateRecoil(float weight) 
+    {
+        return weight * spread * RECOIL_MULTIPLIER;
     }
 
 }
